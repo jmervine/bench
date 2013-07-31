@@ -1,0 +1,33 @@
+{
+  "name": "bench",
+  "version": "0.0.0",
+  "description": "Benchmark Stuff",
+  "main": "index.js",
+  "scripts": {
+    "test": "make"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:jmervine/bench.git"
+  },
+  "keywords": [
+    "benchmark",
+    "httperf",
+    "phantomjs",
+    "phantomas",
+    "yslow",
+    "web",
+    "performance"
+  ],
+  "author": "Joshua Mervine <joshua@mervine.net> (http://mervine.net)",
+  "license": "BSD",
+  "bugs": {
+    "url": "https://github.com/jmervine/bench/issues"
+  },
+  "dependencies": {
+    "nodeunit": "~0.8.1",
+    "httperfjs": "0.0.4",
+    "yslowjs": "~0.2.0",
+    "phapper": "~0.1.5"
+  }
+}
