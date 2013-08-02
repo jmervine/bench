@@ -25,5 +25,5 @@ A combination of [HTTPerf.js](http://mervine.net/projects/npms/httperfjs), [YSlo
 
 ### Working Example
 
-See a working example of this for my blog ([mervine.net](http://mervine.net) at [bench.mervine.net](http://bench.mervine.net).
+See a working example of this for my blog ([mervine.net](http://mervine.net)) at [bench.mervine.net](http://bench.mervine.net).
 
