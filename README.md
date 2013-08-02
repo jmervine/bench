@@ -29,3 +29,8 @@ thresholds.
 
 3. Open `./index.html` in a browser to view graph of multip runs.
 
+### Working Example
+
+See a working example of this for my blog ([mervine.net](http://mervine.net)
+at [bench.mervine.net](http://bench.mervine.net).
+
