@@ -79,16 +79,6 @@ function grader() {
                      [ '--info', 'basic' ]);
 }
 
-function benchFactory(mark) {
-    var name = '\''+getUrl(settings.host, settings.path)+'\'';
-    debug('Building ' + name);
-    benchmarks[name] = function (test) {
-        debug('Running ' + name);
-        mark.run( function (run) {
-        });
-    };
-}
-
 /***********************************************************************
  * Benchmarks
  **********************************************************************/
@@ -98,7 +88,6 @@ var results;
 try {
     results = require(storage).results;
 } catch(e) {
-    console.log(e);
     results = [];
 }
 var rindex = results.length;
@@ -119,8 +108,7 @@ function bench(name, benchObj) {
         benchObj.run( function (run) {
             if (name === 'client') { run = run.metrics; }
             debug(name + ' callback.');
-            debug(run);
-            debug(results[rindex]);
+            debug(JSON.stringify(run, null, 2));
             results[rindex][name] = run;
             test.ok(run);
             Object.keys(settings.thresholds).forEach( function (key) {
