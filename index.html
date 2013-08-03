@@ -28,17 +28,33 @@
         function doThresholds() {
             $('thresholds').addClassName('active');
             $('breakdown').removeClassName('active');
+            $('breakdown-line').removeClassName('active');
             graphThresholds();
         }
 
         function doBreakdown() {
             $('breakdown').addClassName('active');
             $('thresholds').removeClassName('active');
+            $('breakdown-line').removeClassName('active');
             graphBreakdown();
         }
 
+        function doBreakdownLine() {
+            $('breakdown-line').addClassName('active');
+            $('breakdown').removeClassName('active');
+            $('thresholds').removeClassName('active');
+            graphBreakdownLine();
+        }
+
         document.observe('dom:loaded', function(){
-            doBreakdown();
+            var uri = window.location.href;
+            if (uri.indexOf('#bdline') !== -1) {
+                doBreakdownLine();
+            } else if (uri.indexOf('#thresh') !== -1) {
+                doThresholds();
+            } else {
+                doBreakdown();
+            }
         });
     </script>
   </head>
@@ -51,8 +67,9 @@
             <a class="brand" href="#">Bench Results</a>
             <div class="nav-collapse collapse">
                 <ul class="nav">
-                    <li id="breakdown"><a href="#" onclick="doBreakdown()">Page Breakdown</a></li>
-                    <li id="thresholds"><a href="#" onclick="doThresholds()">Thresholds</a></li>
+                    <li id="breakdown"><a href="#bdbar" onclick="doBreakdown()">Breakdown (bar)</a></li>
+                    <li id="breakdown-line"><a href="#bdline" onclick="doBreakdownLine()">Breakdown (line)</a></li>
+                    <li id="thresholds"><a href="#thresh" onclick="doThresholds()">Thresholds</a></li>
                     <li><a href="http://github.com/jmervine/bench">Fork Bench on Github</a></li>
                 </ul>
             </div>
