@@ -13,6 +13,9 @@ A combination of [HTTPerf.js](http://mervine.net/projects/npms/httperfjs), [YSlo
     git clone https://github.com/jmervine/bench.git
     cd bench
     make setup
+    
+> See [Phapper](http://mervine.net/projects/npms/phapper) if you're having issues with PhantomJS.
+
 
 ### Usage
 
