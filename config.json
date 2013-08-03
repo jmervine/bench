@@ -2,11 +2,11 @@
     "DEBUG" : false,
     "host"  : "mervine.net",
     "runs"  : 9,
-    "path"  : "/about",
+    "path"  : "/",
     "warmup": false,
     "thresholds": {
-        "connection_time_median": 1000,
-        "httpTrafficCompleted"  : 10000,
+        "connection_time_median": 40,
+        "httpTrafficCompleted"  : 3000,
         "o"                     : 70
     }
 }
