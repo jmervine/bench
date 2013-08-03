@@ -69,7 +69,7 @@ function client() {
     );
 }
 
-function grader() {
+function yslow() {
     return new YSlow(getUrl(settings.host, settings.path),
                      [ '--info', 'basic' ]);
 }
@@ -143,7 +143,7 @@ console.log('\nChecking: %s', httpURI);
 console.log('------------------------------------------------------------');
 benchmarks['server: '+httpURI] = bench('server', server());
 benchmarks['client: '+httpURI] = bench('client', client());
-benchmarks['grader: '+httpURI] = bench('grader', grader());
+benchmarks['yslow: '+httpURI] = bench('yslow', yslow());
 
 Object.keys(benchmarks).forEach(function (bm) {
     benchmarks[bm](function (error) {
