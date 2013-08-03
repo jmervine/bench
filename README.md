@@ -2,7 +2,7 @@
 
 > WARNING: This is very much alpha!
 
-A combination of [HTTPerf.js](http://mervine.net/projects/npms/httperfjs), [YSlow.js](http://mervine.net/projects/npms/yslowjs) and [Phantomas](https://github.com/macbre/phantomas) (a [PhantomJS](http://phantomjs.org/) backed client performance metrics scrapper). Using [NodeUnit](https://github.com/caolan/nodeunit) to test a page against configurated thresholds and fail if not met. Additionally, basic graphing of last 10 results.
+A combination of [HTTPerf.js](http://mervine.net/projects/npms/httperfjs), [YSlow.js](http://mervine.net/projects/npms/yslowjs) and [Phantomas](https://github.com/macbre/phantomas) (a [PhantomJS](http://phantomjs.org/) backed client performance metrics scrapper). Benchmark a page against configurated thresholds and fail if not met. Additionally, basic graphing of last 10 results.
 
 ### Install
 
