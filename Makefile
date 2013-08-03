@@ -2,7 +2,7 @@ PHANTOMAS_VERSION=0.4.1
 PHANTOMAS_PATH=https://github.com/macbre/phantomas/archive/$(PHANTOMAS_VERSION).zip
 
 bench: setup
-	./node_modules/.bin/nodeunit ./index.js
+	node ./index.js
 
 setup: lib/phantomas
 	npm install

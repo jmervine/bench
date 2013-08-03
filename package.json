@@ -25,7 +25,6 @@
     "url": "https://github.com/jmervine/bench/issues"
   },
   "dependencies": {
-    "nodeunit": "~0.8.1",
     "httperfjs": "0.0.4",
     "yslowjs": "~0.2.0",
     "phapper": "~0.1.5"

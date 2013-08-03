@@ -11,11 +11,13 @@ var settings    = require('./config.json');
 
 var storage     = './latest.js';
 
+var failed_test = false;
+
 /***********************************************************************
  * Helpers
  **********************************************************************/
 function write() {
-    console.log('Writing results to: %s', storage);
+    console.log('\nWriting results to: %s', storage);
     fs.writeFileSync(storage, 'var thresholds = '
                      + JSON.stringify(settings.thresholds, null, 4)
                      + '\n\n'
@@ -25,26 +27,19 @@ function write() {
                      + 'module.exports = { results: results, thresholds: thresholds}; }');
 }
 
-function report() {
-    console.log('\nResults:');
-    Object.keys(settings.thresholds).forEach(function(key) {
-        [ 'server', 'client', 'grader' ].forEach(function(marker) {
-            if (results[rindex][marker].hasOwnProperty(key)) {
-                console.log('- %s: %s', key, results[rindex][marker][key]);
-            }
-        });
-    });
-}
-
-function verify_total() {
+function verify() {
     if (tested_keys.length !== Object.keys(settings.thresholds).length) {
         console.error('ERROR: Not all tests were run.');
         console.error('Tested:\n' + JSON.stringify(tested_keys, null, 4));
         console.error('\nExpected:\n' + JSON.stringify(Object.keys(settings.thresholds), null, 4));
         process.exit(1);
-    } else {
-        process.exit();
     }
+
+    if (failed_test) {
+        process.exit(1);
+    }
+
+    process.exit(0);
 }
 
 function debug(message) {
@@ -102,52 +97,65 @@ var tested_keys = [];
 
 function bench(name, benchObj) {
     debug('Building ' + name);
-    return function (test) {
-        var expect = 1;
+    return function (callback) {
         debug('Running server: ' + httpURI);
-        benchObj.run( function (run) {
-            if (name === 'client') { run = run.metrics; }
-            debug(name + ' callback.');
-            debug(JSON.stringify(run, null, 2));
-            results[rindex][name] = run;
-            test.ok(run);
-            Object.keys(settings.thresholds).forEach( function (key) {
-                debug('checking ' + key);
-                if (run.hasOwnProperty(key)) {
-                    expect++;
-                    tested_keys.push(key);
-                    if (key === 'o') {
-                        test.ok(run[key] >= settings.thresholds[key],
-                           '\''+key+'\' threshold: '+settings.thresholds[key]+' / actual: '+run[key]);
-                    } else {
-                        test.ok(run[key] <= settings.thresholds[key],
-                           '\''+key+'\' threshold: '+settings.thresholds[key]+' / actual: '+run[key]);
-                    }
+        try {
+            benchObj.run( function (run, etc) {
+
+                if (typeof etc === 'object') {
+                    if (etc.error) { callback(etc.error); }
                 }
+
+                if (name === 'client') { run = run.metrics; }
+                results[rindex][name] = run;
+                Object.keys(settings.thresholds).forEach( function (key) {
+                    debug('checking ' + key);
+                    var stat = '+';
+                    if (run.hasOwnProperty(key)) {
+                        tested_keys.push(key);
+                        if (key === 'o') {
+                            debug('omg \'o\'');
+                            if (run[key] <= settings.thresholds[key]) {
+                                stat = '-';
+                                failed_test = true;
+                            }
+                        } else {
+                            if (run[key] >= settings.thresholds[key]) {
+                                stat = '-';
+                                failed_test = true;
+                            }
+                        }
+                        console.log('[%s] %s\n    -> %s (threshold: %s)\n',
+                                    stat, key, run[key], settings.thresholds[key]);
+                    }
+                });
+                callback();
             });
-            test.expect(expect);
-            test.done();
-        });
+        } catch (e) {
+            callback(e);
+        }
     };
 }
 
-var benchmarks = {
-    setUp:    function (cb) { cb(); },
-    tearDown: function (cb) { cb(); },
-};
+var benchmarks = { };
 
+console.log('\nChecking: %s', httpURI);
+console.log('------------------------------------------------------------');
 benchmarks['server: '+httpURI] = bench('server', server());
 benchmarks['client: '+httpURI] = bench('client', client());
 benchmarks['grader: '+httpURI] = bench('grader', grader());
 
-module.exports = benchmarks;
+Object.keys(benchmarks).forEach(function (bm) {
+    benchmarks[bm](function (error) {
+        if (error) { throw error; }
+    });
+});
 
 /***********************************************************************
  * Finish up
  **********************************************************************/
 process.on('exit', function () {
     write();
-    report();
-    verify_total();
+    verify();
 });
 
