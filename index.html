@@ -24,6 +24,19 @@
         text-align: center;
       }
     </style>
+    <script>
+        function doThresholds() {
+            $('thresholds').addClassName('active');
+            $('breakdown').removeClassName('active');
+            graphThresholds();
+        }
+
+        function doBreakdown() {
+            $('breakdown').addClassName('active');
+            $('thresholds').removeClassName('active');
+            graphBreakdown();
+        }
+    </script>
   </head>
 
   <body>
@@ -34,6 +47,8 @@
             <a class="brand" href="#">Bench Results</a>
             <div class="nav-collapse collapse">
                 <ul class="nav">
+                    <li id="thresholds" class="active"><a href="#" onclick="doThresholds()">Thresholds</a></li>
+                    <li id="breakdown"><a href="#" onclick="doBreakdown()">Page Breakdown</a></li>
                     <li><a href="http://github.com/jmervine/bench">Fork Bench on Github</a></li>
                 </ul>
             </div>
