@@ -31,12 +31,13 @@ A combination of [HTTPerf.js](http://mervine.net/projects/npms/httperfjs), [YSlo
 1. Update configuration (`./config.json') to reflect your host, path and thresholds.
 2. Run:
 ```
-    bench --help # for usage
+    make bench # runs ./config.json
 
-    # quick start
-    bench init
-    bench --host example.com --path '/your/target/path'
+    # or with cli
+    node ./index.js --help
 ```
+> Note: Ignore `init`, it's not needed with a git checkout. It's for `npm install`, which isn't working yet.
+
 3. Open `./index.html` in a browser to view graph of multiple runs.
 
 ### Working Example

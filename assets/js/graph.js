@@ -185,20 +185,20 @@ function graphBreakdownLine() {
     results.forEach(function (result) {
         var c = result.client;
 
-        d1.push([i, parseFloat(c.timeToFirstByte)]);
-        d2.push([i, parseFloat(c.onDOMReadyTime)]);
-        d3.push([i, parseFloat(c.windowOnLoadTime/1000)]);
-        d4.push([i, parseFloat(c.httpTrafficCompleted/1000)]);
+        d1.push([i, parseFloat(c.timeToFirstByte)||undefined]);
+        d2.push([i, parseFloat(c.onDOMReadyTime)||undefined]);
+        d3.push([i, parseFloat(c.windowOnLoadTime/1000)||undefined]);
+        d4.push([i, parseFloat(c.httpTrafficCompleted/1000)||undefined]);
 
         max1.push(parseFloat(c.onDOMReadyTime));
         max2.push(parseFloat(c.httpTrafficCompleted/1000));
         i++;
     });
 
-    d1.push([i, undefined]);
-    d2.push([i, undefined]);
-    d3.push([i, undefined]);
-    d4.push([i, undefined]);
+    d1.push([11, undefined]);
+    d2.push([11, undefined]);
+    d3.push([11, undefined]);
+    d4.push([11, undefined]);
 
     max1.sort(function(a,b) { return a-b; });
     max2.sort(function(a,b) { return a-b; });
