@@ -7,6 +7,7 @@
 
     <script src="lib/assets/js/prototype.js"></script>
     <script src="lib/assets/js/flotr.js"></script>
+    <script src="lib/assets/js/lib/canvastext.js"></script>
     <script src="latest.js"></script>
     <script>
     </script>
@@ -46,12 +47,22 @@
             graphBreakdownLine();
         }
 
+        function doLastPie() {
+            $('last-pie').addClassName('active');
+            $('breakdown-line').removeClassName('active');
+            $('breakdown').removeClassName('active');
+            $('thresholds').removeClassName('active');
+            graphLastPie();
+        }
+
         document.observe('dom:loaded', function(){
             var uri = window.location.href;
             if (uri.indexOf('#bdline') !== -1) {
                 doBreakdownLine();
             } else if (uri.indexOf('#thresh') !== -1) {
                 doThresholds();
+            } else if (uri.indexOf('#lastpie') !== -1) {
+                doLastPie();
             } else {
                 doBreakdown();
             }
@@ -70,6 +81,7 @@
                     <li id="breakdown"><a href="#bdbar" onclick="doBreakdown()">Breakdown (bar)</a></li>
                     <li id="breakdown-line"><a href="#bdline" onclick="doBreakdownLine()">Breakdown (line)</a></li>
                     <li id="thresholds"><a href="#thresh" onclick="doThresholds()">Thresholds</a></li>
+                    <li id="last-pie"><a href="#lastpie" onclick="doLastPie()">Last Run (pie)</a></li>
                     <li><a href="http://github.com/jmervine/bench">Source (github)</a></li>
                 </ul>
             </div>
