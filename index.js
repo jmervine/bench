@@ -170,7 +170,7 @@ function client() {
     return new Phapper(
         './phantomas.js',
         ['--format=json', '--url='+getUrl(settings.host, settings.path)],
-        { cwd: './lib/phantomas' }
+        { cwd: path.resolve(__dirname, 'lib', 'phantomas')}
     );
 }
 
