@@ -2,18 +2,97 @@
 /***********************************************************************
  * CLI
  **********************************************************************/
-var cli = require('./lib/cli');
+var cli  = require('commander');
+var fs   = require('fs');
+var ncp  = require('ncp').ncp;
+var path = require('path');
+
+cli
+  .version('0.0.1')
+  .usage('[options] [init or ./config.js]')
+  .option('-s , --host [HOST]'   , 'target host')
+  .option('-p , --path [PATH]'   , 'target path')
+  .option('-r , --runs [RUNS]'   , 'number of runs')
+  .option('-o , --output [FILE]' , 'number of runs')
+  .option('-w , --warmup'        , 'warmup hosts')
+  .option('-d , --debug'         , 'debug messaging');
+
+cli.on('--help', function(){
+  console.log('  init: Creates needed files in current working directory.');
+  console.log('  - config.json - default configuration.');
+  console.log('  - latest.js   - data storage.');
+  console.log('  - index.html  - results viewer.');
+  console.log('  * WARNING: this will overwrite configs and data.');
+  console.log(' ');
+  console.log('  Notes:');
+  console.log('  - Uses \'./config.js\' by default.');
+  console.log('  - Options overide config file settings.');
+  console.log(' ');
+});
+
+cli.parse(process.argv);
+
+function cpSync(s, d, enc) {
+    enc = enc || 'utf8';
+    fs.writeFileSync(d, fs.readFileSync(s, enc), enc);
+}
+
+function copy(fname, src, dest) {
+    var s = path.join(src, fname);
+    var d = path.join(dest, fname);
+    cpSync(s, d);
+    console.log('    Creating: %s', fname);
+}
+
+if (cli.args[0] === 'init') {
+    console.log(' ');
+    console.log('  bench init ');
+    console.log(' ');
+
+    var source = path.resolve(__dirname);
+    var dest   = path.resolve(process.cwd());
+    var latest = path.join(dest, 'latest.js');
+
+    if (source !== dest) {
+        copy('config.json', source, dest);
+        copy('index.html', source, dest);
+
+        fs.writeFileSync(latest,
+            'var thresholds = [];\n\n'
+            +'var results = [];\n\n'
+            +'if (typeof window === \'undefined\') {'
+            +'module.exports = { results: results, thresholds: thresholds}; }');
+        console.log('    Creating: latest.js');
+
+        ncp(path.join(source, 'assets'), path.join(dest, 'assets'), function (err) {
+            if (err) { console.trace(e); process.exit(1); }
+            console.log('    Creating: assets directory');
+            console.log(' ');
+            process.exit();
+        });
+    }
+} else {
 
 /***********************************************************************
- * Libs
+ * MEAT!
  **********************************************************************/
+
+/**
+ * Libs
+ */
 var fs          = require('fs');
 var path        = require('path');
 var HTTPerf     = require('httperfjs');
 var Phapper     = require('phapper');
 var YSlow       = require('yslowjs');
 
-var settings    = require(cli.args[0]||'./config.json');
+var settings;
+try {
+    settings    = require(cli.args[0]||'./config.json');
+} catch (e) {
+    console.trace(e);
+    process.exit(1);
+}
 
 [ 'host', 'path' , 'runs' ].forEach(function(p) {
     if (typeof cli[p] !== 'undefined') {
@@ -29,16 +108,16 @@ var storage;
 
 if (typeof cli.output !== 'undefined') {
     storage = cli.output;
-    fs.writeFileSync(latest, 'document.write(\'<script type="text/javascript" src="./bar.js"></script>\');');
+    fs.writeFileSync(latest, 'document.write(\'<script type="text/javascript" src="'+storage+'"></script>\');');
 } else {
     var storage = latest;
 }
 
 var failed_test = false;
 
-/***********************************************************************
+/**
  * Helpers
- **********************************************************************/
+ */
 function write() {
     console.log('\nWriting results to: %s', storage);
     fs.writeFileSync(storage, 'var thresholds = '
@@ -100,9 +179,9 @@ function yslow() {
                      [ '--info', 'basic' ]);
 }
 
-/***********************************************************************
+/**
  * Benchmarks
- **********************************************************************/
+ */
 var httpURI    = '\''+getUrl(settings.host, settings.path)+'\'';
 
 var results;
@@ -137,7 +216,11 @@ function bench(name, benchObj) {
             benchObj.run( function (run, etc) {
 
                 if (typeof etc === 'object') {
-                    if (etc.error) { callback(etc.error); }
+                    if (etc.error) {
+                        debug('ERROR returned by run');
+                        debug(JSON.stringify(etc, null, 4));
+                        callback(etc.error);
+                    }
                 }
 
                 if (name === 'client') { run = run.metrics; }
@@ -166,6 +249,8 @@ function bench(name, benchObj) {
                 callback();
             });
         } catch (e) {
+            debug('ERROR during run');
+            debug(JSON.stringify(e, null, 4));
             callback(e);
         }
     };
@@ -185,11 +270,15 @@ Object.keys(benchmarks).forEach(function (bm) {
     });
 });
 
-/***********************************************************************
+/**
  * Finish up
- **********************************************************************/
+ */
 process.on('exit', function () {
     write();
     verify();
 });
+
+/**********************************************************************/
+
+} // end cli:else
 
