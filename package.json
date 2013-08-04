@@ -4,7 +4,8 @@
   "description": "Benchmark Stuff",
   "main": "index.js",
   "scripts": {
-    "test": "make"
+    "test": "make",
+    "install": "make lib/phantomas"
   },
   "bin": {
     "bench": "./index.js"
