@@ -9,64 +9,35 @@
     <script src="lib/assets/js/flotr.js"></script>
     <script src="lib/assets/js/lib/canvastext.js"></script>
     <script src="latest.js"></script>
-    <script>
-    </script>
     <script src="lib/assets/js/graph.js"></script>
-
     <style>
       body { padding-top: 60px; }
-      #graph {
-        width : 800px;
-        height: 400px;
-        margin: 50px auto;
-      }
-      #footer {
-        margin: 8px auto;
-        text-align: center;
-      }
+      #graph { width : 800px; height: 400px; margin: 50px auto; }
+      #footer { margin: 8px auto; text-align: center; }
+      .hero-unit { padding-top: 1px; }
     </style>
     <script>
-        function doThresholds() {
-            $('thresholds').addClassName('active');
-            $('breakdown').removeClassName('active');
-            $('breakdown-line').removeClassName('active');
-            graphThresholds();
-        }
-
-        function doBreakdown() {
-            $('breakdown').addClassName('active');
-            $('thresholds').removeClassName('active');
-            $('breakdown-line').removeClassName('active');
-            graphBreakdown();
-        }
-
-        function doBreakdownLine() {
-            $('breakdown-line').addClassName('active');
-            $('breakdown').removeClassName('active');
-            $('thresholds').removeClassName('active');
-            graphBreakdownLine();
-        }
-
-        function doLastPie() {
-            $('last-pie').addClassName('active');
-            $('breakdown-line').removeClassName('active');
-            $('breakdown').removeClassName('active');
-            $('thresholds').removeClassName('active');
-            graphLastPie();
-        }
-
-        document.observe('dom:loaded', function(){
-            var uri = window.location.href;
-            if (uri.indexOf('#bdline') !== -1) {
-                doBreakdownLine();
-            } else if (uri.indexOf('#thresh') !== -1) {
-                doThresholds();
-            } else if (uri.indexOf('#lastpie') !== -1) {
-                doLastPie();
-            } else {
-                doBreakdown();
+        function setActive(obj) {
+            var id;
+            if (typeof obj === 'string')
+                id = obj;
+            else
+                id = obj.up().id;
+            var graphs = [ 'thresholds', 'breakdown', 'breakdown-line', 'last-pie' ];
+            graphs.forEach(function (graph) {
+                if (id === graph)
+                    $(graph).addClassName('active');
+                else
+                    $(graph).removeClassName('active');
+            });
+            switch(id) {
+                case 'thresholds' : graphThresholds(); break;
+                case 'breakdown'  : graphBreakdown();  break;
+                case 'last-pie'   : graphLastPie();    break;
+                default           : graphBreakdownLine();
             }
-        });
+        }
+        document.observe('dom:loaded', function(){ setActive(window.location.href.split('#')[1]||'breakdown-line'); });
     </script>
   </head>
 
@@ -75,13 +46,13 @@
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
-            <a class="brand" href="#">Bench Results</a>
+            <a class="brand" href="#breakdown" onclick="setActive('breakdown')">Bench Results</a>
             <div class="nav-collapse collapse">
                 <ul class="nav">
-                    <li id="breakdown"><a href="#bdbar" onclick="doBreakdown()">Breakdown (bar)</a></li>
-                    <li id="breakdown-line"><a href="#bdline" onclick="doBreakdownLine()">Breakdown (line)</a></li>
-                    <li id="thresholds"><a href="#thresh" onclick="doThresholds()">Thresholds</a></li>
-                    <li id="last-pie"><a href="#lastpie" onclick="doLastPie()">Last Run (pie)</a></li>
+                    <li id="breakdown"><a href="#breakdown" onclick="setActive(this);">Page Load Stacked</a></li>
+                    <li id="breakdown-line"><a href="#breakdown-line" onclick="setActive(this)">Page Load Times</a></li>
+                    <li id="thresholds"><a href="#thresholds" onclick="setActive(this)">Threshold Times</a></li>
+                    <li id="last-pie"><a href="#last-pie" onclick="setActive(this)">Last Run</a></li>
                     <li><a href="http://github.com/jmervine/bench">Source (github)</a></li>
                 </ul>
             </div>
@@ -90,7 +61,9 @@
     </div>
 
     <div class="container">
-        <div id="graph"></div>
+        <div class="hero-unit">
+            <div id="graph"></div>
+        </div>
     </div>
 
     <div id="footer">
