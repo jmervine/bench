@@ -24,7 +24,6 @@ function graphThresholds() {
     var vals1 = [];
     var vals2 = [];
 
-    console.log(thresholds);
     thresholds.forEach(function(key) {
         data.push({label: key, data: [[0,undefined]], lines: {show: true}, points: {show: true}});
         var idata = data.length-1;
