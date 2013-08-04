@@ -82,12 +82,14 @@ function graphThresholds() {
         yaxis: {
             noTicks: 10,
             min: min,
-            max: y1max
+            max: y1max,
+            title: 'ms'
         },
         y2axis: {
             noTicks: 10,
             min: min,
-            max: y2max
+            max: y2max,
+            title: 'sec'
         },
         mouse: {
             track: true,
@@ -162,7 +164,8 @@ function graphBreakdown() {
         yaxis: {
             noTicks: 10,
             max: max,
-            min: 0
+            min: 0,
+            title: 'ms'
         },
         grid: {
             verticalLines : false,
@@ -232,12 +235,14 @@ function graphBreakdownLine() {
         yaxis: {
             noTicks: 10,
             min: min,
-            max: y1max
+            max: y1max,
+            title: 'ms'
         },
         y2axis: {
             noTicks: 10,
             min: min,
-            max: y2max
+            max: y2max,
+            title: 'sec'
         },
         mouse: {
             track: true,
@@ -279,10 +284,6 @@ function graphLastPie() {
             verticalLines: false,
             horizontalLines: false,
             outlineWidth: 0
-        },
-        mouse: {
-            track: true,
-            trackFormatter: function(obj) { return obj.y; }
         },
         legend: {
             position: 'nw'
