@@ -1,10 +1,13 @@
 {
   "name": "bench",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Benchmark Stuff",
   "main": "index.js",
   "scripts": {
     "test": "make"
+  },
+  "bin": {
+    "bench": "./index.js"
   },
   "repository": {
     "type": "git",
@@ -27,6 +30,7 @@
   "dependencies": {
     "httperfjs": "0.0.4",
     "yslowjs": "~0.2.0",
-    "phapper": "~0.1.5"
+    "phapper": "~0.1.5",
+    "commander": "~2.0.0"
   }
 }

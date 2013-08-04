@@ -1,15 +1,38 @@
+#! /usr/bin/env node
+/***********************************************************************
+ * CLI
+ **********************************************************************/
+var cli = require('./lib/cli');
+
 /***********************************************************************
  * Libs
  **********************************************************************/
 var fs          = require('fs');
 var path        = require('path');
-var assert      = require('assert');
 var HTTPerf     = require('httperfjs');
 var Phapper     = require('phapper');
 var YSlow       = require('yslowjs');
-var settings    = require('./config.json');
 
-var storage     = './latest.js';
+var settings    = require(cli.args[0]||'./config.json');
+
+[ 'host', 'path' , 'runs' ].forEach(function(p) {
+    if (typeof cli[p] !== 'undefined') {
+        settings[p] = cli[p];
+    }
+});
+
+if (typeof cli.warmup !== 'undefined') { settings.warmup = true; }
+if (typeof cli.debug  !== 'undefined') { settings.DEBUG  = true; }
+
+var latest = './latest.js';
+var storage;
+
+if (typeof cli.output !== 'undefined') {
+    storage = cli.output;
+    fs.writeFileSync(latest, 'document.write(\'<script type="text/javascript" src="./bar.js"></script>\');');
+} else {
+    var storage = latest;
+}
 
 var failed_test = false;
 
@@ -25,6 +48,9 @@ function write() {
                      + JSON.stringify(results, null, 4)
                      + '\n\nif (typeof window === \'undefined\') { '
                      + 'module.exports = { results: results, thresholds: thresholds}; }');
+    console.log(' ');
+    console.log('View results by opening \'./index.html\' in a browser.');
+    console.log(' ');
 }
 
 function verify() {
@@ -94,6 +120,14 @@ if (rindex === 10) {
 results.push({});
 
 var tested_keys = [];
+
+function warmup() {
+    if (settings.warmup) {
+        debug('WARMING UP!!');
+        server().runSync();
+        debug('DONE UP!!');
+    }
+}
 
 function bench(name, benchObj) {
     debug('Building ' + name);
