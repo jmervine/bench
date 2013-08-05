@@ -173,6 +173,7 @@ if (process.argv[2] === 'init') {
     benchmarks['client: '+url] = bench('client', client);
     benchmarks['yslow: ' +url] = bench('yslow',  yslow);
 
+    results[rindex].date = new Date();
     Object.keys(benchmarks).forEach(function (bm) {
         benchmarks[bm](function (error) {
             if (error) {

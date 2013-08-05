@@ -19,6 +19,38 @@ function expandKey(key) {
     }
 }
 
+function formatDate(date) {
+    function zeroPad(n, mod) {
+        mod = mod || 0;
+        return ('0' + (n+mod)).slice(-2);
+    }
+
+    date = new Date(date);
+    var dateStr;
+    var dayCheck = new Date(date);
+    if (dayCheck.setHours(0,0,0,0) == new Date().setHours(0,0,0,0)) {
+        dateStr = zeroPad(date.getHours()) + ':'
+                + zeroPad(date.getMinutes());
+    } else {
+        dateStr = zeroPad(date.getMonth(), 1) + '/'
+                + zeroPad(date.getDate()) + '/'
+                + date.getFullYear();
+    }
+    return dateStr;
+}
+
+var dateTickFmt = function(n) {
+    n = parseInt(n, 10);
+    if (n === 0 || n === 11) {
+        return ' ';
+    }
+    var i = n-1;
+    if (results[i] && results[i].date) {
+        return formatDate(new Date(results[i].date));
+    }
+    return ' ';
+};
+
 function graphThresholds() {
     var data = [];
     var vals1 = [];
@@ -71,13 +103,8 @@ function graphThresholds() {
         HtmlText: false,
         xaxis: {
             noTicks: 12,
-            tickFormatter: function (n) {
-                n = parseInt(n, 10);
-                if (n === 0 || n === 11) {
-                    return ' ';
-                }
-                return '#' + n;
-            }
+            tickFormatter: dateTickFmt,
+            labelsAngle : 45
         },
         yaxis: {
             noTicks: 10,
@@ -206,7 +233,7 @@ function graphBreakdownLine() {
     max1.sort(function(a,b) { return a-b; });
     max2.sort(function(a,b) { return a-b; });
 
-    var y1max = max1[max1.length-1]+100;
+    var y1max = max1[max1.length-1]+(max1[max1.length-1]*0.1);
     var y2max = max2[max2.length-1]+1;
 
     var min = 0;
@@ -224,13 +251,8 @@ function graphBreakdownLine() {
         HtmlText: false,
         xaxis: {
             noTicks: 12,
-            tickFormatter: function (n) {
-                n = parseInt(n, 10);
-                if (n === 0 || n === 11) {
-                    return ' ';
-                }
-                return '#' + n;
-            }
+            tickFormatter: dateTickFmt,
+            labelsAngle : 45
         },
         yaxis: {
             noTicks: 10,
