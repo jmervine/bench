@@ -154,8 +154,9 @@ if (process.argv[2] === 'init') {
 
 
     try {
-        results = require(storage).results;
+        results = require(path.resolve(process.cwd(), storage)).results;
     } catch(e) {
+        console.log('Warning: couldn\'t find previous results (@ %s), creating.', storage);
         results = [];
     }
 
