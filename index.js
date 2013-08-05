@@ -12,7 +12,7 @@ var YSlow   = require('yslowjs');
  * Functions
  **********************************************************************/
     function write() {
-        console.log('\nWriting results to: %s', storage);
+        util.debug(' => Writing results to: %s', storage);
         fs.writeFileSync(storage, 'var thresholds = '
                          + util.json(settings.thresholds)
                          + '\n\n'
@@ -20,9 +20,9 @@ var YSlow   = require('yslowjs');
                          + util.json(results)
                          + '\n\nif (typeof window === \'undefined\') { '
                          + 'module.exports = { results: results, thresholds: thresholds}; }');
-        console.log(' ');
+        console.log('------------------------------------------------------------');
         console.log('View results by opening \'./index.html\' in a browser.');
-        console.log(' ');
+        console.log('------------------------------------------------------------');
     }
 
     function verify() {
@@ -169,6 +169,7 @@ if (process.argv[2] === 'init') {
 
     console.log('\nChecking: %s', url);
     console.log('------------------------------------------------------------');
+    console.log(' ');
     benchmarks['server: '+url] = bench('server', server);
     benchmarks['client: '+url] = bench('client', client);
     benchmarks['yslow: ' +url] = bench('yslow',  yslow);
