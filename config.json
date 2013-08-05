@@ -7,6 +7,6 @@
     "thresholds": {
         "connection_time_median": 40,
         "httpTrafficCompleted"  : 3000,
-        "o"                     : 70
+        "o"                     : 65
     }
 }
