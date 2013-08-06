@@ -30,14 +30,12 @@ var YSlow   = require('yslowjs');
             console.error('ERROR: Not all tests were run.');
             console.error('Tested:\n' + util.json(tested_keys));
             console.error('\nExpected:\n' + util.json(Object.keys(settings.thresholds)));
-            process.exit(1);
+            exitstatus = 1;
         }
 
         if (failed_test) {
-            process.exit(1);
+            exitstatus = 1;
         }
-
-        process.exit(0);
     }
 
     function warmup() {
@@ -110,6 +108,7 @@ if (process.argv[2] === 'init') {
     var failed_test = false;
     var tested_keys = [];
     var benchmarks  = { };
+    var exitstatus  = 0;
     var settings;
     var storage;
     var results;
@@ -123,7 +122,6 @@ if (process.argv[2] === 'init') {
         settings = require(cli.args[0]||'./config.json');
     } catch (e) {
         console.trace(e);
-        process.exit(1);
     }
 
     [ 'host', 'path' , 'runs' ].forEach(function(p) {
@@ -180,7 +178,7 @@ if (process.argv[2] === 'init') {
         benchmarks[bm](function (error) {
             if (error) {
                 console.trace(error);
-                process.exit(1);
+                exitstatus = 1;
             }
         });
     });
@@ -191,6 +189,7 @@ if (process.argv[2] === 'init') {
     process.on('exit', function () {
         write();
         verify();
+        process.exit(exitstatus);
     });
 }
 
