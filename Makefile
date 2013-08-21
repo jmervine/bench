@@ -1,6 +1,9 @@
 PHANTOMAS_VERSION=0.4.1
 PHANTOMAS_PATH=https://github.com/macbre/phantomas/archive/$(PHANTOMAS_VERSION).zip
 
+test: .PHONY
+	./node_modules/.bin/nodeunit ./test/*_test.js
+
 bench: setup
 	node ./index.js
 
@@ -19,3 +22,4 @@ lib/phantomas:
 		mv phantomas-$(PHANTOMAS_VERSION) phantomas && \
 		rm $(PHANTOMAS_VERSION).zip
 
+.PHONY:
