@@ -31,11 +31,9 @@ var YSlow   = require('yslowjs');
             console.error('Tested:\n' + util.json(tested_keys));
             console.error('\nExpected:\n' + util.json(Object.keys(settings.thresholds)));
             exitstatus = 1;
+            return false;
         }
-
-        if (failed_test) {
-            exitstatus = 1;
-        }
+        return true;
     }
 
     function warmup() {
@@ -187,8 +185,10 @@ if (process.argv[2] === 'init') {
      * Finish up
      */
     process.on('exit', function () {
-        write();
-        verify();
+        if (verify()) {
+            write();
+        }
+        if (failed_test) { exitstatus = 1; }
         process.exit(exitstatus);
     });
 }

@@ -99,7 +99,7 @@ function graphThresholds() {
 
     var f = Flotr.draw($('graph'), data.reverse(), {
         title: 'Threshold Times',
-        subtitle: 'Note: Higher values are converted to seconds and shown on the right.',
+        subtitle: 'Last Run: '+ unescape(results[results.length-1].yslow.u),
         HtmlText: false,
         xaxis: {
             noTicks: 12,
@@ -179,7 +179,7 @@ function graphBreakdown() {
     var f = Flotr.draw($('graph'), data, {
         HtmlText: false,
         title: 'Page Load Stacked',
-        subtitle: 'Note: overlaps indicate a processing error.',
+        subtitle: 'Last Run: ' + unescape(results[results.length-1].yslow.u),
         xaxis: { noTicks: 0, min: -0.2 },
         bars: {
             show: true,
@@ -247,7 +247,7 @@ function graphBreakdownLine() {
 
     var f = Flotr.draw($('graph'), data, {
         title: 'Page Load Times',
-        subtitle: 'Note: Values off chat are processing errors.',
+        subtitle: 'Last Run: ' + unescape(results[results.length-1].yslow.u),
         HtmlText: false,
         xaxis: {
             noTicks: 12,
@@ -280,6 +280,42 @@ function graphBreakdownLine() {
     });
 }
 
+function graphSizePie() {
+    var result = results[results.length-1].client;
+    var keys   = ['htmlSize', 'cssSize', 'jsSize', 'imageSize', 'otherSize'];
+    var data   = [];
+
+    for (var i = 0; i < keys.length; i++) {
+        var key = keys[i];
+
+        if (result[key] > 0) {
+            console.log(result[key]);
+            data.push({ data: [[0, result[key]]], label: key });
+        }
+    }
+
+    var f = Flotr.draw($('graph'), data, {
+        title: 'Last Run: Data',
+        subtitle: unescape(results[results.length-1].yslow.u),
+        HtmlText: false,
+        pie: {
+            show: true,
+            explode: 6
+        },
+        xaxis: { showLabels: false },
+        yaxis: { showLabels: false },
+        grid: {
+            verticalLines: false,
+            horizontalLines: false,
+            outlineWidth: 0
+        },
+        mouse: { track: true },
+        legend: {
+            position: 'nw'
+        }
+    });
+}
+
 function graphLastPie() {
     var result = results[results.length-1];
 
@@ -294,7 +330,8 @@ function graphLastPie() {
     ];
 
     var f = Flotr.draw($('graph'), data, {
-        title: 'Last Run',
+        title: 'Last Run: Actions',
+        subtitle: unescape(results[results.length-1].yslow.u),
         HtmlText: false,
         pie: {
             show: true,

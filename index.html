@@ -23,7 +23,7 @@
                 id = obj;
             else
                 id = obj.up().id;
-            var graphs = [ 'thresholds', 'breakdown', 'breakdown-line', 'last-pie' ];
+            var graphs = [ 'thresholds', 'breakdown', 'breakdown-line', 'action-pie' ];
             graphs.forEach(function (graph) {
                 if (id === graph)
                     $(graph).addClassName('active');
@@ -33,7 +33,8 @@
             switch(id) {
                 case 'thresholds' : graphThresholds(); break;
                 case 'breakdown'  : graphBreakdown();  break;
-                case 'last-pie'   : graphLastPie();    break;
+                case 'action-pie' : graphLastPie();    break;
+                case 'data-pie'   : graphSizePie();    break;
                 default           : graphBreakdownLine();
             }
         }
@@ -49,10 +50,11 @@
             <a class="brand" href="#breakdown" onclick="setActive('breakdown')">Bench Results</a>
             <div class="nav-collapse collapse">
                 <ul class="nav">
-                    <li id="breakdown"><a href="#breakdown" onclick="setActive(this);">Page Load Stacked</a></li>
-                    <li id="breakdown-line"><a href="#breakdown-line" onclick="setActive(this)">Page Load Times</a></li>
-                    <li id="thresholds"><a href="#thresholds" onclick="setActive(this)">Threshold Times</a></li>
-                    <li id="last-pie"><a href="#last-pie" onclick="setActive(this)">Last Run</a></li>
+                    <li id="breakdown"><a href="#breakdown" onclick="setActive(this);">Breakdown</a></li>
+                    <li id="breakdown-line"><a href="#breakdown-line" onclick="setActive(this)">Timing</a></li>
+                    <li id="thresholds"><a href="#thresholds" onclick="setActive(this)">Thresholds</a></li>
+                    <li id="action-pie"><a href="#action-pie" onclick="setActive(this)">Actions</a></li>
+                    <li id="data-pie"><a href="#data-pie" onclick="setActive(this)">Data</a></li>
                     <li><a href="https://github.com/jmervine/bench"><img src="assets/img/gh.png" />&nbsp;Fork</a></li>
                 </ul>
             </div>
