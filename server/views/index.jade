@@ -8,7 +8,15 @@
             a(href="#line" onclick="draw('line')") Line
           li.column
             a(href="#column" onclick="draw('column')") Bar
+
 .container-fluid(style="margin-top: 75px")
+  .row-fluid
+    .span2
+    .span10
+      .form-group(style="margin: 0 auto; width: 300px")
+        form
+          select#urlselect.form-control(style="width: 300px; font-size: 130%" onchange="draw()")
+
   .row-fluid
     .span2
       .well.sidebar-nav

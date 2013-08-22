@@ -1,4 +1,4 @@
-// helpers
+var factorurls;
 var database;
 var template = {
     chart: { type: 'line' },
@@ -180,9 +180,36 @@ function ensureSideLinks() {
     $('ul.nav.nav-list a').each(function() { $(this).attr("href", "#"+template.chart.type); });
 }
 
+function buildDropdown(data) {
+    var urls = [];
+    data.forEach(function (set) {
+        if (urls.indexOf(set.url) === -1) {
+            urls.push(set.url);
+        }
+    });
+
+    if (urls.length === 0) {
+        factorurls = false;
+        $('#urlselect').attr('disabled', 'disabled');
+    } else {
+        factorurls = true;
+        urls.forEach(function(url) {
+            $('#urlselect').append(new Option(url, url));
+        });
+    }
+}
+
 function draw(type) {
     template.chart.type = type || template.chart.type;
     fetchData(function (data) {
+        if (typeof factorurls === 'undefined') {
+            buildDropdown(data);
+        }
+        if (factorurls) {
+            data = data.filter(function(e,i,a){
+                return ($('#urlselect option:selected').attr('value') === e.url);
+            });
+        }
         if (template.chart.type === 'column') {
             template.xAxis.max = (data.length >= 5 ? 4 : data.length-1);
         } else {
