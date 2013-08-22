@@ -1,0 +1,27 @@
+.navbar.navbar-fixed-top
+  .navbar-inner
+    .container
+      a.brand(href="#")= title
+      .nav-collapse
+        ul.nav
+          li.line.active
+            a(href="#line" onclick="draw('line')") Line
+          li.column
+            a(href="#column" onclick="draw('column')") Bar
+.container-fluid(style="margin-top: 75px")
+  .row-fluid
+    .span2
+      .well.sidebar-nav
+        ul.nav.nav-list
+          li.nav-header Categories
+          li.timing
+            a(href="#" onclick="update(this)") Page Timings
+          li.sizing
+            a(href="#" onclick="update(this)") Content Sizing
+          li.requests
+            a(href="#" onclick="update(this)") HTTP Requests
+          li.counts
+            a(href="#" onclick="update(this)") Misc. Counts
+
+    .span10
+      #highcharts(style="width:100%; height:400px;")
