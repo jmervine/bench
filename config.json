@@ -1,3 +1,4 @@
 {
-    "url": "http://mervine.net/about"
+    "database": "mongodb://localhost:27017/benchdb",
+    "collection": "client"
 }

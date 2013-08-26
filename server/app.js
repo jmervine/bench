@@ -13,10 +13,15 @@ var app = module.exports = express.createServer();
 app.configure(function(){
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
+  app.set('app root', process.cwd());
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(app.router);
   app.use(express.static(__dirname + '/public'));
+
+  //console.log('database:   %s', process.env.database);
+  //console.log('collection: %s', process.env.collection);
+
 });
 
 app.configure('development', function(){
@@ -30,7 +35,10 @@ app.configure('production', function(){
 // Routes
 
 app.get('/', routes.index);
-app.get('/database.json', routes.database);
+app.get('/:collection/keys',  routes.keys);
+app.get('/:collection/urls',  routes.urls);
+app.get('/:collection/data',  routes.data);
+app.get('/:collection/count', routes.count);
 
 app.listen(3000, function(){
   console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);

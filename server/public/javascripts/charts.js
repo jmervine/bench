@@ -1,77 +1,135 @@
-var factorurls;
-var database;
-var template = {
-    chart: { type: 'line' },
-    title: { text: 'Page Timings' },
-    legend: {
-        align: 'right',
-        verticalAlign: 'top',
-        layout: 'vertical',
-        x: -10,
-        y: 30,
-        borderWidth: 0
-    },
-    tooltip: {
-        shared: true,
-        useHTML: true,
-        headerFormat: '<table>',
-        pointFormat: '<tr><td style="color: {series.color}">{series.name}: </td>' +
-        '<td style="text-align: right"><b>{point.y}</b></td></tr>',
-        footerFormat: '</table>'
-    },
-    scrollbar: { enabled: false },
-    xAxis: {
-        min: 0,
-        labels: {
-            formatter: xFormatter,
-            rotation: 60
+var start, xRotation, currentCategory, count = {}, limit = 10, disabled = {};
+var yTitle = 'Duration (ms)', chartTitle = 'Results';
+
+$(window).load(function() {
+    $.getJSON(apiPath('urls'), function(result) {
+        result.forEach(function(url) {
+            setPagination();
+            $('#urlselect').append($('<option>', { value: url, text: url }));
+        });
+    });
+
+    $.getJSON(apiPath('keys'), function(result) {
+        var keyCount = 0;
+        result.forEach(function(key) {
+            keyCount++;
+            var optionOptions = { value: key, text:key };
+            if (key === 'httpTrafficCompleted') {
+                optionOptions.selected = 'selected';
+            }
+            $('#keyselect').append($('<option>', optionOptions));
+        });
+        $('#keyselect').attr('size', keyCount);
+    });
+
+    $('#urlselect').change(function() {
+        setPagination();
+        draw();
+    });
+
+    $('#limitselect').change(function() {
+        limit = parseInt($('#limitselect option:selected').val(), 10);
+        switch (limit) {
+            case 10: xRotation = undefined; break;
+            case 25: xRotation = 45; break;
+            case 50: xRotation = 60; break;
+            default: xRotation = 90;
         }
-    },
-    yAxis: {
-        allowDecimals: true,
-        title: {
-            text: 'Time in ms'
-        },
-        tickInterval: 500
-    },
-    exporting: {
-        enabled: true
+        draw();
+    });
+
+    $('#keyselect').change(function() {
+        clearCategories();
+        var keys = [];
+        chartTitle = 'Results';
+        $('#keyselect option:selected').each(function() { keys.push($(this).val()); });
+        draw(keys);
+    });
+});
+
+function apiPath(api, params) {
+    params = params || {};
+    var path = '/client/'+api+'?';
+    var opts = [];
+    Object.keys(params).forEach(function(key) {
+        opts.push(key+'='+params[key]);
+    });
+    return path+opts.join('&');
+}
+
+function selectedURL() {
+    if ($('#urlselect option:selected').index() !== 0) {
+        return escape($('#urlselect option:selected').attr('value'));
     }
+}
+
+function getCount(callback) {
+    callback = callback || function(){};
+    if (!selectedURL()) {
+        callback(false); return;
+    }
+    if (count[selectedURL()]) {
+        callback(true); return;
+    }
+    $.getJSON(apiPath('count', {url: selectedURL()}), function(c) {
+        count[selectedURL()] = c;
+        callback(true); return;
+    });
+}
+
+var navigation = {
+    first: function() {
+        start = 0;
+    },
+    earlier: function() {
+        start = (start ? (start - limit) : (count[selectedURL()] - (limit * 2)));
+        start = (start < 0 ? 0 : start);
+    },
+    last: function() {
+        start = undefined;
+    },
+    later: function() {
+        start = start + limit;
+    },
 };
 
-switch(top.location.href.split('#')[1]) {
-    case 'column':
-        template.chart.type = 'column';
-        break;
-    default:
-        template.chart.type = 'line';
-}
-
-function updateTemplate(cat) {
-    switch (cat) {
-        case 'sizing':
-            template.yAxis.title.text = 'Size in bytes';
-            template.yAxis.tickInterval = 100000;
-            template.title.text = 'Content Sizing';
-            break;
-        case 'requests':
-            template.yAxis.title.text = 'Requests';
-            template.yAxis.tickInterval = 10;
-            template.title.text = 'HTTP Requests';
-            break;
-        case 'counts':
-            template.yAxis.title.text = 'Counts';
-            template.yAxis.tickInterval = 25;
-            template.title.text = 'Misc. Counts';
-            break;
-        default: /* timing */
-            template.yAxis.title.text = 'Time in ms';
-            template.title.text = 'Page Timings';
-            template.yAxis.tickInterval = 500;
+function navigate(name) {
+    if (!disabled[name]) {
+        navigation[name]();
+        draw();
+        setPagination();
     }
 }
 
-var keys = {
+function disable(name) {
+    $('li.'+name).addClass('disabled');
+    disabled[name] = true;
+}
+
+function enable(name) {
+    $('li.'+name).removeClass('disabled');
+    disabled[name] = false;
+}
+
+function setPagination() {
+    getCount(function(success) {
+        ['first','last','earlier','later'].forEach(function(n) { disable(n); });
+        if (success) {
+            var c = count[selectedURL()];
+            if (typeof start === 'undefined' || (start !== 0 && c > limit)) {
+                enable('first');
+                enable('earlier');
+            }
+
+            if (typeof start !== 'undefined' && (start+limit) < c) {
+                enable('last');
+                enable('later');
+            }
+        }
+    });
+}
+
+var categories = {
     timing: [
         'timeToFirstByte',
         'timeToLastByte',
@@ -121,132 +179,118 @@ var keys = {
     ]
 };
 
-function fetchData(callback) {
-    if (typeof database === 'undefined') {
-        $.getJSON('/database.json', function(data) {
-            database = data;
-            callback(database);
-        });
+var yTitles = {
+    timing: 'Duration (ms)',
+    sizing: 'Size (bytes)',
+    requests: 'Count',
+    counts: 'Count'
+};
+
+function clearCategories() {
+    $('ul.nav li').each(function() { $(this).removeClass('active'); });
+}
+
+function clearKeySelect() {
+    $('#keyselect option').each(function() { $(this).removeAttr('selected'); });
+}
+
+function selectKeySelect(keys) {
+    clearKeySelect();
+    $('#keyselect option').each(function() {
+        if (keys.indexOf($(this).val()) !== -1) {
+            $(this).attr('selected', 'selected');
+        }
+    });
+}
+
+function category(cat) {
+    clearCategories();
+    clearKeySelect();
+    if (cat) {
+        $('li.'+cat).addClass('active');
+        selectKeySelect(categories[cat]);
+        currentCategory = cat;
+        chartTitle = cat[0].toUpperCase()+cat.slice(1);
+        yTitle = yTitles[cat];
     } else {
-        callback(database);
+        currentCategory = undefined;
+        chartTitle = 'Results';
+        yTitle = yTitles.timing;
     }
-}
-
-function parseResult(data, keys, type) {
-    var results = [];
-
-    keys.forEach(function(key) {
-        var d = [];
-        data.forEach(function(entry) {
-            d.push(entry.metrics[key]);
-        });
-        results.push({ name: key, data: d });
-    });
-
-    return results;
-}
-
-function parseDate(data, type) {
-    var dates = [];
-    data.forEach(function(entry) {
-        dates.push(entry.created_at);
-    });
-
-    return dates;
-}
-
-function xFormatter() {
-    return moment(this.value).fromNow();
-}
-
-function yFormatter() {
-    return this.value/1000;
-}
-
-function setActiveNav(type) {
-    switch (type) {
-        case 'column':
-            $('li.line').removeClass('active');
-            $('li.column').addClass('active');
-            break;
-        default:
-            $('li.column').removeClass('active');
-            $('li.line').addClass('active');
-            break;
-    }
-}
-
-function ensureSideLinks() {
-    $('ul.nav.nav-list a').each(function() { $(this).attr("href", "#"+template.chart.type); });
-}
-
-function buildDropdown(data) {
-    var urls = [];
-    data.forEach(function (set) {
-        if (urls.indexOf(set.url) === -1) {
-            urls.push(set.url);
-        }
-    });
-
-    if (urls.length === 0) {
-        factorurls = false;
-        $('#urlselect').attr('disabled', 'disabled');
-    } else {
-        factorurls = true;
-        urls.forEach(function(url) {
-            $('#urlselect').append(new Option(url, url));
-        });
-    }
-}
-
-function draw(type) {
-    template.chart.type = type || template.chart.type;
-    fetchData(function (data) {
-        if (typeof factorurls === 'undefined') {
-            buildDropdown(data);
-        }
-        if (factorurls) {
-            data = data.filter(function(e,i,a){
-                return ($('#urlselect option:selected').attr('value') === e.url);
-            });
-        }
-        if (template.chart.type === 'column') {
-            template.xAxis.max = (data.length >= 5 ? 4 : data.length-1);
-        } else {
-            template.xAxis.max = (data.length >= 10 ? 9 : data.length-1);
-        }
-        template.scrollbar.enabled = (data.length-1 > template.xAxis.max);
-        template.xAxis.categories = parseDate(data, template.chart.type);
-        template.series = parseResult(data, keys.active, template.chart.type);
-        setActiveNav(template.chart.type);
-        ensureSideLinks();
-        $('#highcharts').highcharts(template);
-    });
-}
-
-function update(child) {
-    var key = $(child).parent().attr('class').split(' ')[0];
-    toggleActive(key);
-    updateTemplate(key);
-    keys.active = keys[key];
     draw();
 }
 
-function toggleActive(key) {
-    $('ul.nav.nav-list li').each(function() {
-        if ($(this).hasClass(key)) {
-            if (!$(this).hasClass('active')) {
-                $(this).addClass('active');
-            }
-        } else {
-            if ($(this).hasClass('active')) {
-                $(this).removeClass('active');
-            }
-        }
+function draw(keys) {
+    if (typeof keys === 'undefined' && currentCategory) {
+        keys = categories[currentCategory];
+    }
+    if (typeof keys === 'undefined') {
+        keys = ['httpTrafficCompleted'];
+    }
+    if (selectedURL()) {
+        var opts = {url: selectedURL(), limit: limit};
+        if (typeof start !== 'undefined') { opts.start = start; }
+        $.getJSON(apiPath('data', opts), function(result) {
+            graph(result, keys);
+        });
+    }
+}
 
+function formattedDate(obj) {
+    var curr = moment();
+    var date = moment.unix(obj.created_at/1000);
+    if (date.format('YYYY-MM-DD') === curr.format('YYY-MM-DD')) {
+        return date.format('HH:mm:ss');
+    }
+    return date.format('YYYY-MM-DD HH:mm');
+}
+
+function graph(data, keys) {
+    keys = keys || ['httpTrafficCompleted'];
+    var series = [];
+    keys.forEach(function(key) {
+        series.push(getSeries(data, key));
+    });
+    $('#highcharts').highcharts({
+        title: {
+            text: chartTitle,
+            x: -20
+        },
+        subtitle: {
+            text: unescape(selectedURL()),
+            x: -20
+        },
+        xAxis: {
+            categories: data.map(formattedDate),
+            labels: { rotation: xRotation }
+        },
+        yAxis: {
+            title: {
+                text: yTitle
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        },
+        tooltip: {
+            valueSuffix: 'ms'
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle',
+            borderWidth: 0
+        },
+        series: series
     });
 }
 
-$(window).load(function () {
-    update($('li.timing a'));
-});
+function getSeries(data, key) {
+    return {
+        name: key,
+        data: data.map(function(o) { return o.metrics[key]; } )
+    };
+}
+

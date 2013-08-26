@@ -5,11 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "make",
-    "install": "make lib/phantomas",
-    "server": "node ./server/app.js"
+    "install": "make lib/phantomas"
   },
   "bin": {
-    "bench": "node ./index.js"
+    "bench": "./index.js"
   },
   "repository": {
     "type": "git",

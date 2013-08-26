@@ -4,22 +4,24 @@ var
     Bench  = require('./lib/bench'),
     DB     = require('./lib/db'),
     JDB    = require('./lib/jsondb'),
-    cli    = require('./lib/cli'),
-    static = require('./lib/static');
+    cli    = require('./lib/cli');
 
 var bench = new Bench(cli.url);
 var runs  = [];
 var db;
 
 switch (cli.action) {
-    case 'static':
-        static(cli, function () {
-            console.log('static generation successful');
-            process.exit(0);
-        });
-        break;
     case 'server':
-        spawn('node', ['./server/app.js'], { stdio: 'inherit' });
+        [
+            'database',
+            'collection',
+            'runs',
+        ].forEach(function(arg) {
+            if (typeof process.env[arg] === 'undefined') {
+                process.env[arg] = cli[arg];
+            }
+        });
+        spawn('node', ['./server/app.js'], { stdio: 'inherit', env: process.env });
         break;
     default:
         if (cli.database.indexOf('mongodb://') === 0) {
