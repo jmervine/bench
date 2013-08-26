@@ -3,7 +3,6 @@ var
     spawn  = require('child_process').spawn,
     Bench  = require('./lib/bench'),
     DB     = require('./lib/db'),
-    JDB    = require('./lib/jsondb'),
     cli    = require('./lib/cli');
 
 var bench = new Bench(cli.url);
@@ -24,23 +23,24 @@ switch (cli.action) {
         spawn('node', ['./server/app.js'], { stdio: 'inherit', env: process.env });
         break;
     default:
-        if (cli.database.indexOf('mongodb://') === 0) {
-            db = new DB(cli.database, cli.collection);
-        } else {
-            db = new JDB(cli.database);
-        }
+        db = new DB(cli.database, cli.collection);
 
         function handleRun(result) {
             if (!result.json) {
                 console.log(result.raw);
+                console.log("Run %s complete. (Parse Error Occured!)", runs.length);
             } else {
                 runs.push(result.json);
+                console.log("Run %s complete. (httpTrafficCompleted: %sms)", runs.length, result.json.metrics.httpTrafficCompleted);
             }
 
-            console.log("Run %s complete.", runs.length);
             if (runs.length === cli.runs) {
                 var set = median(runs);
-                db.add(set);
+                db.add(set, function() {
+                    console.log("-------------------------------------------");
+                    console.log("Complete! (median httpTrafficCompleted: %sms)", set.metrics.httpTrafficCompleted);
+                    process.exit(0);
+                });
             }
         }
 
