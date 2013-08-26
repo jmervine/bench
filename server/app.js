@@ -4,11 +4,21 @@
  */
 
 var express = require('express')
-  , routes = require('./routes');
+  , routes = require('./routes')
+  , connect = require('connect');
 
 var app = module.exports = express.createServer();
 
 // Configuration
+
+app.configure('production', function(){
+  app.use(connect.logger());
+});
+
+app.configure('development', function(){
+  app.use(connect.logger('dev'));
+  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+});
 
 app.configure(function(){
   app.set('views', __dirname + '/views');
@@ -18,14 +28,6 @@ app.configure(function(){
   app.use(express.methodOverride());
   app.use(app.router);
   app.use(express.static(__dirname + '/public'));
-
-  //console.log('database:   %s', process.env.database);
-  //console.log('collection: %s', process.env.collection);
-
-});
-
-app.configure('development', function(){
-  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
 
 app.configure('production', function(){

@@ -1,8 +1,8 @@
 #! /usr/bin/env node
 var
+    MongoClient = require('mongodb').MongoClient,
     spawn  = require('child_process').spawn,
     Bench  = require('./lib/bench'),
-    DB     = require('./lib/db'),
     cli    = require('./lib/cli');
 
 var bench = new Bench(cli.url);
@@ -23,8 +23,6 @@ switch (cli.action) {
         spawn('node', ['./server/app.js'], { stdio: 'inherit', env: process.env });
         break;
     default:
-        db = new DB(cli.database, cli.collection);
-
         function handleRun(result) {
             if (!result.json) {
                 console.log(result.raw);
@@ -36,10 +34,29 @@ switch (cli.action) {
 
             if (runs.length === cli.runs) {
                 var set = median(runs);
-                db.add(set, function() {
-                    console.log("-------------------------------------------");
-                    console.log("Complete! (median httpTrafficCompleted: %sms)", set.metrics.httpTrafficCompleted);
-                    process.exit(0);
+                set.created_at = Date.now();
+                MongoClient.connect(cli.database, {db: {native_parser: true}}, function(err, db) {
+                    if (err) {
+                        console.trace(err);
+                        process.exit(1);
+                    }
+                    var collection = db.collection(cli.collection);
+                    collection.insert(set, function (err, obj) {
+                        console.log("-------------------------------------------");
+                        console.log("Complete! (median httpTrafficCompleted: %sms)", set.metrics.httpTrafficCompleted);
+                        console.log("-------------------------------------------");
+                        if (err) { console.trace(err); }
+                        if (!obj) { console.log('Error inserting set:\n%s', JSON.stringify(set, null, 2)); }
+
+                        if (err || !obj) {
+                            console.log("-------------------------------------------");
+                        }
+
+                        console.log('MongoDB Database:\n - %s', cli.database);
+                        console.log('MongoDB Collection:\n - %s', cli.collection);
+                        console.log("-------------------------------------------");
+                        process.exit(0);
+                    });
                 });
             }
         }

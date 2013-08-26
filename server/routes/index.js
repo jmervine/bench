@@ -2,7 +2,7 @@ var isError     = require('util').isError;
 var MongoClient = require('mongodb').MongoClient;
 
 function dbc(collection, index, callback) {
-    MongoClient.connect(process.env.database, function(err, db) {
+    MongoClient.connect(process.env.database, {db: {native_parser: true}}, function(err, db) {
         if (err) {
             console.trace(err);
             callback(err);

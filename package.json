@@ -33,7 +33,8 @@
     "commander": "~2.0.0",
     "mongodb": "~1.3.19",
     "express": "2.5.8",
-    "jade": ">= 0.0.1"
+    "jade": ">= 0.0.1",
+    "connect": "~2.8.5"
   },
   "devDependencies": {
     "nodeunit": "~0.8.1"

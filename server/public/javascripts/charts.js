@@ -1,11 +1,31 @@
 var start, xRotation, currentCategory, count = {}, limit = 10, disabled = {};
 var yTitle = 'Duration (ms)', chartTitle = 'Results';
 
+var cookieOptions = { expires: 365 };
+
 $(window).load(function() {
     $.getJSON(apiPath('urls'), function(result) {
         result.forEach(function(url) {
             setPagination();
             $('#urlselect').append($('<option>', { value: url, text: url }));
+
+            if ($.cookie('selected_limit') !== 'undefined') {
+                $('#limitselect option').each(function() {
+                    if ($(this).attr('value') === $.cookie('selected_limit')) {
+                        $(this).attr('selected', 'selected');
+                        $('#limitselect').change();
+                    }
+                });
+            }
+
+            if ($.cookie('selected_url') !== 'undefined') {
+                $('#urlselect option').each(function() {
+                    if ($(this).attr('value') === $.cookie('selected_url')) {
+                        $(this).attr('selected', 'selected');
+                        $('#urlselect').change();
+                    }
+                });
+            }
         });
     });
 
@@ -19,16 +39,18 @@ $(window).load(function() {
             }
             $('#keyselect').append($('<option>', optionOptions));
         });
-        $('#keyselect').attr('size', keyCount);
+        //$('#keyselect').attr('size', keyCount);
     });
 
     $('#urlselect').change(function() {
+        $.cookie('selected_url', $('#urlselect option:selected').val(), cookieOptions);
         setPagination();
         draw();
     });
 
     $('#limitselect').change(function() {
         limit = parseInt($('#limitselect option:selected').val(), 10);
+        $.cookie('selected_limit', limit, cookieOptions);
         switch (limit) {
             case 10: xRotation = undefined; break;
             case 25: xRotation = 45; break;
@@ -187,6 +209,7 @@ var yTitles = {
 };
 
 function clearCategories() {
+    currentCategory = undefined;
     $('ul.nav li').each(function() { $(this).removeClass('active'); });
 }
 
