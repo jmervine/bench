@@ -1,7 +1,7 @@
 {
   "name": "bench",
   "version": "0.0.3",
-  "description": "Benchmark Stuff",
+  "description": "Benchmark a web page and display results with a pretty UI.",
   "main": "index.js",
   "scripts": {
     "test": "make",
