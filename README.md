@@ -53,6 +53,10 @@ node ./index.js server
 # $ bench server
 ```
 
+### UI Screenshot (as of Aug 27 2013)
+
+![Bench UI](http://mervine.net/pages/bench2.png)
+
 ### Working Example
 
 See a working example of this for my blog ([mervine.net](http://mervine.net)) at [bench.mervine.net](http://bench.mervine.net).
