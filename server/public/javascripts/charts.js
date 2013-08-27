@@ -6,7 +6,6 @@ var cookieOptions = { expires: 365 };
 $(window).load(function() {
     $.getJSON(apiPath('urls'), function(result) {
         result.forEach(function(url) {
-            setPagination();
             $('#urlselect').append($('<option>', { value: url, text: url }));
 
             if ($.cookie('selected_limit') !== 'undefined') {
@@ -15,16 +14,13 @@ $(window).load(function() {
                         $(this).attr('selected', 'selected');
                         limit = parseInt($('#limitselect option:selected').val(), 10);
                         limitRotation();
-                        draw();
                     }
                 });
             }
-
             if ($.cookie('selected_url') !== 'undefined') {
                 $('#urlselect option').each(function() {
                     if ($(this).attr('value') === $.cookie('selected_url')) {
                         $(this).attr('selected', 'selected');
-                        setPagination();
                         draw();
                     }
                 });
@@ -46,7 +42,6 @@ $(window).load(function() {
 
     $('#urlselect').change(function() {
         $.cookie('selected_url', $('#urlselect option:selected').val(), cookieOptions);
-        setPagination();
         draw();
     });
 
@@ -61,6 +56,7 @@ $(window).load(function() {
         clearCategories();
         var keys = [];
         chartTitle = 'Results';
+        yTitle = '';
         $('#keyselect option:selected').each(function() { keys.push($(this).val()); });
         draw(keys);
     });
@@ -125,7 +121,6 @@ function navigate(name) {
     if (!disabled[name]) {
         navigation[name]();
         draw();
-        setPagination();
     }
 }
 
@@ -139,12 +134,12 @@ function enable(name) {
     disabled[name] = false;
 }
 
-function setPagination() {
+function setPagination(callback) {
     getCount(function(success) {
         ['first','last','earlier','later'].forEach(function(n) { disable(n); });
         if (success) {
             var c = count[selectedURL()];
-            start = c - limit;
+            start = (c > limit ? (c-limit) : 0);
             console.log(start);
             if (typeof start === 'undefined' || (start !== 0 && c > limit)) {
                 enable('first');
@@ -156,6 +151,7 @@ function setPagination() {
                 enable('later');
             }
         }
+        callback();
     });
 }
 
@@ -252,19 +248,21 @@ function category(cat) {
 }
 
 function draw(keys) {
-    if (typeof keys === 'undefined' && currentCategory) {
-        keys = categories[currentCategory];
-    }
-    if (typeof keys === 'undefined') {
-        keys = ['httpTrafficCompleted'];
-    }
-    if (selectedURL()) {
-        var opts = {url: selectedURL(), limit: limit};
-        if (typeof start !== 'undefined') { opts.start = start; }
-        $.getJSON(apiPath('data', opts), function(result) {
-            graph(result, keys);
-        });
-    }
+    setPagination(function () {
+      if (typeof keys === 'undefined' && currentCategory) {
+          keys = categories[currentCategory];
+      }
+      if (typeof keys === 'undefined') {
+          keys = ['httpTrafficCompleted'];
+      }
+      if (selectedURL()) {
+          var opts = {url: selectedURL(), limit: limit};
+          if (typeof start !== 'undefined') { opts.start = start; }
+          $.getJSON(apiPath('data', opts), function(result) {
+              graph(result, keys);
+          });
+      }
+    });
 }
 
 function formattedDate(obj) {
