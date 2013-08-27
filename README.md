@@ -2,7 +2,7 @@
 
 > WARNING: This is very much alpha!
 
-A combination of [HTTPerf.js](http://mervine.net/projects/npms/httperfjs), [YSlow.js](http://mervine.net/projects/npms/yslowjs) and [Phantomas](https://github.com/macbre/phantomas) (a [PhantomJS](http://phantomjs.org/) backed client performance metrics scrapper). Benchmark a page against configurated thresholds and fail if not met. Additionally, basic graphing of last 10 results.
+Using [Phantomas](https://github.com/macbre/phantomas) (a [PhantomJS](http://phantomjs.org/) backed client performance metrics scrapper). Benchmark a page, store results in MongoDB and display result via the built in server.
 
 > Note to Window's Users
 >
