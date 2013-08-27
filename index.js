@@ -4,6 +4,7 @@ var
     spawn  = require('child_process').spawn,
     Bench  = require('./lib/bench'),
     path   = require('path'),
+    async  = require('async'),
     cli    = require('./lib/cli');
 
 var bench = new Bench(cli.url);
@@ -25,41 +26,6 @@ switch (cli.action) {
         break;
     default:
         function handleRun(result) {
-            if (!result.json) {
-                console.log(result.raw);
-                console.log("Run %s complete. (Parse Error Occured!)", runs.length);
-            } else {
-                runs.push(result.json);
-                console.log("Run %s complete. (httpTrafficCompleted: %sms)", runs.length, result.json.metrics.httpTrafficCompleted);
-            }
-
-            if (runs.length === cli.runs) {
-                var set = median(runs);
-                set.created_at = Date.now();
-                MongoClient.connect(cli.database, {db: {native_parser: true}}, function(err, db) {
-                    if (err) {
-                        console.trace(err);
-                        process.exit(1);
-                    }
-                    var collection = db.collection(cli.collection);
-                    collection.insert(set, function (err, obj) {
-                        console.log("-------------------------------------------");
-                        console.log("Complete! (median httpTrafficCompleted: %sms)", set.metrics.httpTrafficCompleted);
-                        console.log("-------------------------------------------");
-                        if (err) { console.trace(err); }
-                        if (!obj) { console.log('Error inserting set:\n%s', JSON.stringify(set, null, 2)); }
-
-                        if (err || !obj) {
-                            console.log("-------------------------------------------");
-                        }
-
-                        console.log('MongoDB Database:\n - %s', cli.database);
-                        console.log('MongoDB Collection:\n - %s', cli.collection);
-                        console.log("-------------------------------------------");
-                        process.exit(0);
-                    });
-                });
-            }
         }
 
         function median(values) {
@@ -72,8 +38,51 @@ switch (cli.action) {
             }
         }
 
-        var i;
-        for (i = 0; i < cli.runs; i++) {
-            bench.run(handleRun);
+        function seriesAction(callback) {
+            console.log('Running %s...', runcount++);
+            bench.run(function (result) {
+                if (!result.json) {
+                    console.log(result.raw);
+                    console.log("Run %s complete. (Parse Error Occured!)", runs.length);
+                } else {
+                    runs.push(result.json);
+                    console.log("Run %s complete. (httpTrafficCompleted: %sms)", runs.length, result.json.metrics.httpTrafficCompleted);
+                }
+                callback(null, null);
+            });
         }
+
+        var series = [];
+        var runcount = 1;
+        for (i = 0; i < cli.runs; i++) {
+            series.push(seriesAction);
+        }
+
+        async.series(series, function (err, result) {
+            var set = median(runs);
+            set.created_at = Date.now();
+            MongoClient.connect(cli.database, {db: {native_parser: true}}, function(err, db) {
+                if (err) {
+                    console.trace(err);
+                    process.exit(1);
+                }
+                var collection = db.collection(cli.collection);
+                collection.insert(set, function (err, obj) {
+                    console.log("-------------------------------------------");
+                    console.log("Complete! (median httpTrafficCompleted: %sms)", set.metrics.httpTrafficCompleted);
+                    console.log("-------------------------------------------");
+                    if (err) { console.trace(err); }
+                    if (!obj) { console.log('Error inserting set:\n%s', JSON.stringify(set, null, 2)); }
+
+                    if (err || !obj) {
+                        console.log("-------------------------------------------");
+                    }
+
+                    console.log('MongoDB Database:\n - %s', cli.database);
+                    console.log('MongoDB Collection:\n - %s', cli.collection);
+                    console.log("-------------------------------------------");
+                    process.exit(0);
+                });
+            });
+        });
 }
