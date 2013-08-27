@@ -15,12 +15,16 @@ A combination of [HTTPerf.js](http://mervine.net/projects/npms/httperfjs), [YSlo
 ### Install
 
 1. Install [Node.js](http://nodejs.org)
-2. Install [httperf](http://www.hpl.hp.com/research/linux/httperf/), optionally to use my version, see [httperf-0.9.1 with individual connection times](http://mervine.net/httperf-0-9-1-with-individual-connection-times).
+2. Install [mongodb](http://www.mongodb.org/)
 3. Install `bench`
+
 ```
-    git clone https://github.com/jmervine/bench.git
-    cd bench
-    make setup
+git clone https://github.com/jmervine/bench.git
+cd bench
+make setup
+
+# npm install is supported (but may be buggy) via:
+# $ npm install -g jmervine/bench
 ```
 
 > See [Phapper](http://mervine.net/projects/npms/phapper) if you're having issues with PhantomJS.
@@ -30,15 +34,24 @@ A combination of [HTTPerf.js](http://mervine.net/projects/npms/httperfjs), [YSlo
 
 1. Update configuration (`./config.json') to reflect your host, path and thresholds.
 2. Run:
-```
-    make bench # runs ./config.json
 
-    # or with cli
-    node ./index.js --help
 ```
+# see: node ./index.js --help
+node ./index.js "http://example.com"
+# if via npm
+# $ bench --help
+# $ bench "http://example.com"
+```
+
 > Note: Ignore `init`, it's not needed with a git checkout. It's for `npm install`, which isn't working yet.
 
-3. Open `./index.html` in a browser to view graph of multiple runs.
+3. Start server:
+
+```
+node ./index.js server
+# if via npm
+# $ bench server
+```
 
 ### Working Example
 
