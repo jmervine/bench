@@ -3,6 +3,7 @@ var
     MongoClient = require('mongodb').MongoClient,
     spawn  = require('child_process').spawn,
     Bench  = require('./lib/bench'),
+    path   = require('path'),
     cli    = require('./lib/cli');
 
 var bench = new Bench(cli.url);
@@ -20,7 +21,7 @@ switch (cli.action) {
                 process.env[arg] = cli[arg];
             }
         });
-        spawn('node', ['./server/app.js'], { stdio: 'inherit', env: process.env });
+        spawn('node', [path.resolve(__dirname,'./server/app.js')], { stdio: 'inherit', env: process.env });
         break;
     default:
         function handleRun(result) {
