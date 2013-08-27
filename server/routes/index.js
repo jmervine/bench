@@ -100,7 +100,7 @@ module.exports = {
             start = 0;
         }
 
-        dbc(req.params.collection, { url: 1 }, function (db, col) {
+        dbc(req.params.collection, { created_at: 1, url: 1 }, function (db, col) {
             if (isError(col)) { res.send(500); return; }
             var opts = { sort: 'created_at' };
             var rows = { url: true, metrics: true, created_at: true };

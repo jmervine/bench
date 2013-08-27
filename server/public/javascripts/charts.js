@@ -13,7 +13,9 @@ $(window).load(function() {
                 $('#limitselect option').each(function() {
                     if ($(this).attr('value') === $.cookie('selected_limit')) {
                         $(this).attr('selected', 'selected');
-                        $('#limitselect').change();
+                        limit = parseInt($('#limitselect option:selected').val(), 10);
+                        limitRotation();
+                        draw();
                     }
                 });
             }
@@ -22,7 +24,8 @@ $(window).load(function() {
                 $('#urlselect option').each(function() {
                     if ($(this).attr('value') === $.cookie('selected_url')) {
                         $(this).attr('selected', 'selected');
-                        $('#urlselect').change();
+                        setPagination();
+                        draw();
                     }
                 });
             }
@@ -39,7 +42,6 @@ $(window).load(function() {
             }
             $('#keyselect').append($('<option>', optionOptions));
         });
-        //$('#keyselect').attr('size', keyCount);
     });
 
     $('#urlselect').change(function() {
@@ -51,12 +53,7 @@ $(window).load(function() {
     $('#limitselect').change(function() {
         limit = parseInt($('#limitselect option:selected').val(), 10);
         $.cookie('selected_limit', limit, cookieOptions);
-        switch (limit) {
-            case 10: xRotation = undefined; break;
-            case 25: xRotation = 45; break;
-            case 50: xRotation = 60; break;
-            default: xRotation = 90;
-        }
+        limitRotation();
         draw();
     });
 
@@ -68,6 +65,15 @@ $(window).load(function() {
         draw(keys);
     });
 });
+
+function limitRotation() {
+    switch (limit) {
+        case 10: xRotation = undefined; break;
+        case 25: xRotation = 45; break;
+        case 50: xRotation = 60; break;
+        default: xRotation = 90;
+    }
+}
 
 function apiPath(api, params) {
     params = params || {};
@@ -138,6 +144,8 @@ function setPagination() {
         ['first','last','earlier','later'].forEach(function(n) { disable(n); });
         if (success) {
             var c = count[selectedURL()];
+            start = c - limit;
+            console.log(start);
             if (typeof start === 'undefined' || (start !== 0 && c > limit)) {
                 enable('first');
                 enable('earlier');
