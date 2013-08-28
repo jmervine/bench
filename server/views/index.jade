@@ -1,50 +1,72 @@
-.navbar.navbar-fixed-top
-  .navbar-inner
-    .container
-      a.brand(href="htt://github.com/jmervine/bench") Bench UI
-      .nav-collapse
-        ul.nav
-          li.timing
-            a(href="javascript:category('timing')") Timing
-          li.sizing
-            a(href="javascript:category('sizing')") Sizing
-          li.requests
-            a(href="javascript:category('requests')") Requests
-          li.counts
-            a(href="javascript:category('counts')") Counts
+.navbar.navbar-fixed-top(role='navigation')
+  .container
+    .navbar-header
+      button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-collapse')
+        span(class='icon-bar')
+        span(class='icon-bar')
+        span(class='icon-bar')
+      a.navbar-brand(href='htt://github.com/jmervine/bench') Bench UI
+    .collapse.navbar-collapse
+      ul.nav.navbar-nav
+        li.timing
+          a(href='javascript:category("timing")') Timing
+        li.sizing
+          a(href='javascript:category("sizing")') Sizing
+        li.requests
+          a(href='javascript:category("requests")') Requests
+        li.counts
+          a(href='javascript:category("counts")') Counts
 
-.container-fluid(style="margin-top: 75px")
-  .row-fluid
-    .span2
-      .well.sidebar-nav
-        select#keyselect.form-control(multiple="multiple" style="margin: 0; width:100%" size="40")
-    .span10
-      .row-fluid
-        .span2
-          ul.pager(style="margin-left:50px")
-            li.previous.first
-              a(href="javascript:navigate('first')") first
-            li.earlier
-              a(href="javascript:navigate('earlier')") earlier
-        .span8
-          .form-group(style="margin: 20px auto; heigh: 50px; width: 600px")
-            form
-              b.form-label(style="font-size: 130%") Page:
-              select#urlselect.form-control(style="width: 300px; font-size: 130%; margin-right: 25px; margin-left: 25px")
-                option Select Page
-              b.form-label(style="font-size: 130%") Limit:
-              select#limitselect.form-control(style="width: 100px; font-size: 130%; margin-left: 25px")
-                option(value="10") 10
-                option(value="25") 25
-                option(value="50") 50
+.container
+  .row.row-offcanvas.row-offcanvas-left
+    #sidebar.col-xs-6.col-sm-4.col-md-2.sidebar-offcanvas(role='navigation')
+      select#keyselect.form-control(multiple='multiple', size='28')
 
-        .span2
-          ul.pager(style="margin-right:50px")
-            li.later
-              a(href="javascript:navigate('later')") later
-            li.next.last
-              a(href="javascript:navigate('last')") last
+    .col-xs-12.col-md-10
+      .container
+        .row.hidden-md.hidden-lg
+          .pull-left
+            p
+              button.btn.btn-primary.btn-xs(type='button', data-toggle='offcanvas') &#171; Toggle Key Select &#187;
+        .row
+          .col-md-2.visible-md.visible-lg
+            ul.pager
+              li.previous.first-lg
+                a(href='javascript:navigate("first")') &#171;
+              li.earlier-lg
+                a(href='javascript:navigate("earlier")') &#8592;
+          .col-xs-12.col-sm-12.col-md-8
+            .input-group
+              form
+                select#urlselect.input-sm
+                  option Select Page
+                select#limitselect.input-sm
+                  option(value='10') Limit (10)
+                  option(value='25') 25
+                  option(value='50') 50
+          .col-md-2.visible-md.visible-lg
+            ul.pager
+              li.later-lg
+                a(href='javascript:navigate("later")') &#8594;
+              li.next.last-lg
+                a(href='javascript:navigate("last")') &#187;
 
-      .row-fluid
-        .span12
-          #highcharts(style="width:100%; height:600px;")
+        .row.hidden-md.hidden-lg
+          .col-xs-6.col-sm-6
+            ul.pager.pull-right(style="margin-left: 20px")
+              li.previous.first-sm
+                a(href='javascript:navigate("first")') &#171;
+              li.earlier-sm
+                a(href='javascript:navigate("earlier")') &#8592;
+          .col-xs-6.col-sm-6
+            ul.pager.pull-left(style="margin-right: 20px")
+              li.later-sm
+                a(href='javascript:navigate("later")') &#8594;
+              li.next.last-sm
+                a(href='javascript:navigate("last")') &#187;
+
+      .container
+        .row
+          .col-xs-12.col-sm-12.col-md-12
+            #highcharts
+

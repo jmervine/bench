@@ -42,6 +42,7 @@ $(window).load(function() {
 
     $('#urlselect').change(function() {
         $.cookie('selected_url', $('#urlselect option:selected').val(), cookieOptions);
+        start = undefined;
         draw();
     });
 
@@ -63,11 +64,9 @@ $(window).load(function() {
 });
 
 function limitRotation() {
-    switch (limit) {
-        case 10: xRotation = undefined; break;
-        case 25: xRotation = 45; break;
-        case 50: xRotation = 60; break;
-        default: xRotation = 90;
+    xRotation = 45;
+    if (limit === 50) {
+        xRotation = 60;
     }
 }
 
@@ -126,29 +125,34 @@ function navigate(name) {
 
 function disable(name) {
     $('li.'+name).addClass('disabled');
-    disabled[name] = true;
+    disabled[name.replace('-sm','').replace('-lg','')] = true;
 }
 
 function enable(name) {
     $('li.'+name).removeClass('disabled');
-    disabled[name] = false;
+    disabled[name.replace('-sm','').replace('-lg','')] = false;
 }
 
 function setPagination(callback) {
     getCount(function(success) {
-        ['first','last','earlier','later'].forEach(function(n) { disable(n); });
+        ['first-sm','last-sm','earlier-sm','later-sm','first-lg','last-lg','earlier-lg','later-lg'].forEach(function(n) { disable(n); });
         if (success) {
             var c = count[selectedURL()];
-            start = (c > limit ? (c-limit) : 0);
-            console.log(start);
-            if (typeof start === 'undefined' || (start !== 0 && c > limit)) {
-                enable('first');
-                enable('earlier');
+            if (typeof start === 'undefined') {
+                start = (c > limit ? undefined : 0);
+            }
+            if (start !== 0 && c > limit) {
+                enable('first-sm');
+                enable('first-lg');
+                enable('earlier-sm');
+                enable('earlier-lg');
             }
 
-            if (typeof start !== 'undefined' && (start+limit) < c) {
-                enable('last');
-                enable('later');
+            if ((start+limit) < c) {
+                enable('last-sm');
+                enable('last-lg');
+                enable('later-sm');
+                enable('later-lg');
             }
         }
         callback();
@@ -256,9 +260,9 @@ function draw(keys) {
           keys = ['httpTrafficCompleted'];
       }
       if (selectedURL()) {
-          var opts = {url: selectedURL(), limit: limit};
-          if (typeof start !== 'undefined') { opts.start = start; }
-          $.getJSON(apiPath('data', opts), function(result) {
+          //var opts = {url: selectedURL(), limit: limit, start: start};
+          //if (typeof start !== 'undefined') { opts.start = start; }
+          $.getJSON(apiPath('data', {url: selectedURL(), limit: limit, start: start}), function(result) {
               graph(result, keys);
           });
       }
