@@ -32,7 +32,8 @@ function find(col, qual, rows, opts, callback) {
 
 module.exports = {
     index: function(req, res){
-      res.render('index', { title: 'Bench' });
+        console.log(req.title_text);
+      res.render('index', { title_text: req.title_text, title_link: req.title_link });
     },
     keys: function(req, res) {
         var keys = [];

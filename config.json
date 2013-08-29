@@ -1,4 +1,4 @@
 {
-    "database": "mongodb://localhost:27017/benchdb",
+    "database": "mongodb://ypu-stats.np.wc1.yellowpages.com:27017/ypu",
     "collection": "client"
 }

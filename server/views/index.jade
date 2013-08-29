@@ -5,7 +5,7 @@
         span(class='icon-bar')
         span(class='icon-bar')
         span(class='icon-bar')
-      a.navbar-brand(href='https://github.com/jmervine/bench') Bench UI
+      a.navbar-brand(href=(title_link ? title_link : '#'))= title_text
     .collapse.navbar-collapse
       ul.nav.navbar-nav
         li.timing

@@ -11,47 +11,45 @@ var bench = new Bench(cli.url);
 var runs  = [];
 var db;
 
+function median(values) {
+    values.sort(function(a,b) {return (a.last_nom > b.last_nom) ? 1 : ((b.last_nom > a.last_nom) ? -1 : 0);} );
+    var half = Math.floor(values.length/2);
+    if (values.length % 2) {
+        return values[half];
+    }
+    return (values[half-1] + values[half]) / 2.0;
+}
+
+function seriesAction(callback) {
+    console.log('Running %s...', runcount++);
+    bench.run(function (result) {
+        if (!result.json) {
+            console.log(result.raw);
+            console.log("Run %s complete. (Parse Error Occured!)", runs.length);
+        } else {
+            runs.push(result.json);
+            console.log("Run %s complete. (httpTrafficCompleted: %sms)", runs.length, result.json.metrics.httpTrafficCompleted);
+        }
+        callback(null, null);
+    });
+}
+
+
 switch (cli.action) {
     case 'server':
-        [
-            'database',
-            'collection',
-            'runs',
+        [ 'database',
+          'collection',
+          'ui_title_text',
+          'ui_title_link',
+          'runs'
         ].forEach(function(arg) {
-            if (typeof process.env[arg] === 'undefined') {
+            if (typeof process.env[arg] === 'undefined' && typeof cli[arg] !== 'undefined') {
                 process.env[arg] = cli[arg];
             }
         });
         spawn('node', [path.resolve(__dirname,'./server/app.js')], { stdio: 'inherit', env: process.env });
         break;
     default:
-        function handleRun(result) {
-        }
-
-        function median(values) {
-            values.sort(function(a,b) {return (a.last_nom > b.last_nom) ? 1 : ((b.last_nom > a.last_nom) ? -1 : 0);} );
-            var half = Math.floor(values.length/2);
-            if (values.length % 2) {
-                return values[half];
-            } else {
-                return (values[half-1] + values[half]) / 2.0;
-            }
-        }
-
-        function seriesAction(callback) {
-            console.log('Running %s...', runcount++);
-            bench.run(function (result) {
-                if (!result.json) {
-                    console.log(result.raw);
-                    console.log("Run %s complete. (Parse Error Occured!)", runs.length);
-                } else {
-                    runs.push(result.json);
-                    console.log("Run %s complete. (httpTrafficCompleted: %sms)", runs.length, result.json.metrics.httpTrafficCompleted);
-                }
-                callback(null, null);
-            });
-        }
-
         var series = [];
         var runcount = 1;
         for (i = 0; i < cli.runs; i++) {

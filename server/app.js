@@ -26,8 +26,16 @@ app.configure(function(){
   app.set('app root', process.cwd());
   app.use(express.bodyParser());
   app.use(express.methodOverride());
+  app.use(function(req,res,next) {
+      req.title_text = (process.env.ui_title_text || 'Bench UI');
+      req.title_link = (process.env.ui_title_link || 'http://github.com/jmervine/bench');
+      next();
+  });
   app.use(app.router);
   app.use(express.static(__dirname + '/public'));
+
+  /* pretty sure there's a better way, but haven't
+   * found it yet. */
 });
 
 app.configure('production', function(){
