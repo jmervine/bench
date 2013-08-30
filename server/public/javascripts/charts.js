@@ -1,7 +1,11 @@
-var start, xRotation, currentCategory, count = {}, limit = 10, disabled = {};
-var yTitle = 'Duration (ms)', chartTitle = 'Results';
-
-var cookieOptions = { expires: 365 };
+var start, xRotation
+  , count = {}
+  , limit = 10
+  , disabled = {}
+  , keys = ['httpTrafficCompleted']
+  , yTitle = 'Duration (ms)'
+  , chartTitle = 'Results'
+  , cookieOptions = { expires: 365 };
 
 $(window).load(function() {
     $.getJSON(apiPath('urls'), function(result) {
@@ -55,11 +59,11 @@ $(window).load(function() {
 
     $('#keyselect').change(function() {
         clearCategories();
-        var keys = [];
+        keys = [];
         chartTitle = 'Results';
         yTitle = '';
         $('#keyselect option:selected').each(function() { keys.push($(this).val()); });
-        draw(keys);
+        draw();
     });
 });
 
@@ -217,7 +221,6 @@ var yTitles = {
 };
 
 function clearCategories() {
-    currentCategory = undefined;
     $('ul.nav li').each(function() { $(this).removeClass('active'); });
 }
 
@@ -239,26 +242,19 @@ function category(cat) {
     clearKeySelect();
     if (cat) {
         $('li.'+cat).addClass('active');
+        keys = categories[cat];
         selectKeySelect(categories[cat]);
-        currentCategory = cat;
         chartTitle = cat[0].toUpperCase()+cat.slice(1);
         yTitle = yTitles[cat];
     } else {
-        currentCategory = undefined;
         chartTitle = 'Results';
         yTitle = yTitles.timing;
     }
     draw();
 }
 
-function draw(keys) {
+function draw() {
     setPagination(function () {
-      if (typeof keys === 'undefined' && currentCategory) {
-          keys = categories[currentCategory];
-      }
-      if (typeof keys === 'undefined') {
-          keys = ['httpTrafficCompleted'];
-      }
       if (selectedURL()) {
           //var opts = {url: selectedURL(), limit: limit, start: start};
           //if (typeof start !== 'undefined') { opts.start = start; }
