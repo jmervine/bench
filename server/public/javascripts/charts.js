@@ -262,6 +262,9 @@ function graph(data, keys) {
         series.push(getSeries(data, key));
     });
     $('#highcharts').highcharts({
+        chart: {
+            type: (data.length <= 5 ? 'column' : 'line')
+        },
         title: {
             text: chartTitle,
             x: -20
