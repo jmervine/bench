@@ -1,4 +1,4 @@
 {
-    "database": "ypu-stats.np.wc1.yellowpages.com/ypu",
+    "database": "localhost/benchdb",
     "collection": "client"
 }
