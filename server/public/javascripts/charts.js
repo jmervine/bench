@@ -172,16 +172,10 @@ var categories = {
         'httpTrafficCompleted'
     ],
     sizing: [
-        'bodySize',
         'htmlSize',
         'cssSize',
         'jsSize',
         'imageSize',
-        'headersSize',
-        'commentsSize',
-        'bodyHTMLSize',
-        'hiddenContentSize',
-        'whiteSpacesSize',
         'otherSize'
     ],
     requests: [
