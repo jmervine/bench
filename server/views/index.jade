@@ -16,57 +16,49 @@
           a(href='javascript:category("requests")') Requests
         li.counts
           a(href='javascript:category("counts")') Counts
+      form.navbar-form.navbar-left
+        .form-group
+          select#urlselect.form-control
+            option Select Page
+        .form-group
+          select#limitselect.form-control
+            option(value='1') 1 (column)
+            option(value='5') 5 (column)
+            option(value='10', selected="selected") 10 Results
+            option(value='25') 25
+            option(value='50') 50
+      ul.nav.navbar-nav.navbar-right
+        li.dropdown
+          a.dropdown-toggle(href='#', data-toggle='dropdown') Help?
+            b.caret
+          ul.dropdown-menu
+            li
+              a(href='https://github.com/jmervine/bench') Bench on Github
+            li
+              a(href='https://github.com/macbre/phantomas') Data Collecter Documentation
+            li
+              a(href='https://github.com/macbre/phantomas#metrics') Data Key Documentation
 
 .container
-  .row.row-offcanvas.row-offcanvas-left
-    #sidebar.col-xs-6.col-sm-4.col-md-2.sidebar-offcanvas(role='navigation')
+  .row
+    #sidebar.col-md-2
       select#keyselect.form-control(multiple='multiple', size='28')
-
-    .col-xs-12.col-md-10
+    .col-sm-12.col-md-10
       .container
-        .row.hidden-md.hidden-lg
-          .pull-left
-            p
-              button.btn.btn-primary.btn-xs(type='button', data-toggle='offcanvas') &#171; Toggle Key Select &#187;
         .row
-          .col-md-2.visible-md.visible-lg
+          .col-xs-5.col-md-2
             ul.pager
               li.previous.first-lg
                 a(href='javascript:navigate("first")') &#171;
               li.earlier-lg
                 a(href='javascript:navigate("earlier")') &#8592;
-          .col-xs-12.col-sm-12.col-md-8
-            .input-group
-              form
-                select#urlselect.input-sm
-                  option Select Page
-                select#limitselect.input-sm
-                  option(value='1') 1 (column)
-                  option(value='5') 5 (column)
-                  option(value='10', selected="selected") 10 Results
-                  option(value='25') 25
-                  option(value='50') 50
-          .col-md-2.visible-md.visible-lg
+          .col-xs-2.col-md-8
+          .col-xs-5.col-md-2
             ul.pager
               li.later-lg
                 a(href='javascript:navigate("later")') &#8594;
               li.next.last-lg
                 a(href='javascript:navigate("last")') &#187;
-
-        .row.hidden-md.hidden-lg
-          .col-xs-6.col-sm-6
-            ul.pager.pull-right(style="margin-left: 20px")
-              li.previous.first-sm
-                a(href='javascript:navigate("first")') &#171;
-              li.earlier-sm
-                a(href='javascript:navigate("earlier")') &#8592;
-          .col-xs-6.col-sm-6
-            ul.pager.pull-left(style="margin-right: 20px")
-              li.later-sm
-                a(href='javascript:navigate("later")') &#8594;
-              li.next.last-sm
-                a(href='javascript:navigate("last")') &#187;
-
       .container
         .row
           .col-xs-12.col-sm-12.col-md-12

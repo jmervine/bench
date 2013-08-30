@@ -241,7 +241,21 @@ function getSeries(data, key) {
     };
 }
 
+function resizeKeyselect() {
+    if ($(window).width() < 785 && $('#keyselect').attr('size') !== '4') {
+        $('#keyselect').attr('size', '4');
+    }
+    if ($(window).width() > 785 && $('#keyselect').attr('size') !== '28') {
+        $('#keyselect').attr('size', '28');
+    }
+}
+
+$(window).resize(function() {
+    resizeKeyselect();
+});
+
 $(window).load(function() {
+    resizeKeyselect();
     category('timing', true);
     $.getJSON(apiPath('urls'), function(result) {
         result.forEach(function(url) {
