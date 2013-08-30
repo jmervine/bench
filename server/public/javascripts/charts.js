@@ -1,71 +1,10 @@
-var start, xRotation
+var start, xRotation, keys
   , count = {}
   , limit = 10
   , disabled = {}
-  , keys = ['httpTrafficCompleted']
   , yTitle = 'Duration (ms)'
   , chartTitle = 'Results'
   , cookieOptions = { expires: 365 };
-
-$(window).load(function() {
-    $.getJSON(apiPath('urls'), function(result) {
-        result.forEach(function(url) {
-            $('#urlselect').append($('<option>', { value: url, text: url }));
-
-            if ($.cookie('selected_limit') !== 'undefined') {
-                $('#limitselect option').each(function() {
-                    if ($(this).attr('value') === $.cookie('selected_limit')) {
-                        $(this).attr('selected', 'selected');
-                        limit = parseInt($('#limitselect option:selected').val(), 10);
-                        limitRotation();
-                    }
-                });
-            }
-            if ($.cookie('selected_url') !== 'undefined') {
-                $('#urlselect option').each(function() {
-                    if ($(this).attr('value') === $.cookie('selected_url')) {
-                        $(this).attr('selected', 'selected');
-                        draw();
-                    }
-                });
-            }
-        });
-    });
-
-    $.getJSON(apiPath('keys'), function(result) {
-        var keyCount = 0;
-        result.forEach(function(key) {
-            keyCount++;
-            var optionOptions = { value: key, text:key };
-            if (key === 'httpTrafficCompleted') {
-                optionOptions.selected = 'selected';
-            }
-            $('#keyselect').append($('<option>', optionOptions));
-        });
-    });
-
-    $('#urlselect').change(function() {
-        $.cookie('selected_url', $('#urlselect option:selected').val(), cookieOptions);
-        start = undefined;
-        draw();
-    });
-
-    $('#limitselect').change(function() {
-        limit = parseInt($('#limitselect option:selected').val(), 10);
-        $.cookie('selected_limit', limit, cookieOptions);
-        limitRotation();
-        draw();
-    });
-
-    $('#keyselect').change(function() {
-        clearCategories();
-        keys = [];
-        chartTitle = 'Results';
-        yTitle = '';
-        $('#keyselect option:selected').each(function() { keys.push($(this).val()); });
-        draw();
-    });
-});
 
 function limitRotation() {
     xRotation = 45;
@@ -218,7 +157,7 @@ function selectKeySelect(keys) {
     });
 }
 
-function category(cat) {
+function category(cat, skipDraw) {
     clearCategories();
     clearKeySelect();
     if (cat) {
@@ -231,7 +170,7 @@ function category(cat) {
         chartTitle = 'Results';
         yTitle = yTitles.timing;
     }
-    draw();
+    if (!skipDraw) { draw(); }
 }
 
 function draw() {
@@ -301,4 +240,65 @@ function getSeries(data, key) {
         data: data.map(function(o) { return o.metrics[key]; } )
     };
 }
+
+$(window).load(function() {
+    category('timing', true);
+    $.getJSON(apiPath('urls'), function(result) {
+        result.forEach(function(url) {
+            $('#urlselect').append($('<option>', { value: url, text: url }));
+
+            if ($.cookie('selected_limit') !== 'undefined') {
+                $('#limitselect option').each(function() {
+                    if ($(this).attr('value') === $.cookie('selected_limit')) {
+                        $(this).attr('selected', 'selected');
+                        limit = parseInt($('#limitselect option:selected').val(), 10);
+                        limitRotation();
+                    }
+                });
+            }
+            if ($.cookie('selected_url') !== 'undefined') {
+                $('#urlselect option').each(function() {
+                    if ($(this).attr('value') === $.cookie('selected_url')) {
+                        $(this).attr('selected', 'selected');
+                        draw();
+                    }
+                });
+            }
+        });
+    });
+
+    $.getJSON(apiPath('keys'), function(result) {
+        var keyCount = 0;
+        result.forEach(function(key) {
+            keyCount++;
+            var optionOptions = { value: key, text:key };
+            if (key === 'httpTrafficCompleted') {
+                optionOptions.selected = 'selected';
+            }
+            $('#keyselect').append($('<option>', optionOptions));
+        });
+    });
+
+    $('#urlselect').change(function() {
+        $.cookie('selected_url', $('#urlselect option:selected').val(), cookieOptions);
+        start = undefined;
+        draw();
+    });
+
+    $('#limitselect').change(function() {
+        limit = parseInt($('#limitselect option:selected').val(), 10);
+        $.cookie('selected_limit', limit, cookieOptions);
+        limitRotation();
+        draw();
+    });
+
+    $('#keyselect').change(function() {
+        clearCategories();
+        keys = [];
+        chartTitle = 'Results';
+        yTitle = '';
+        $('#keyselect option:selected').each(function() { keys.push($(this).val()); });
+        draw();
+    });
+});
 
