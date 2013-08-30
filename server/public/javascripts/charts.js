@@ -272,10 +272,10 @@ function draw(keys) {
 function formattedDate(obj) {
     var curr = moment();
     var date = moment.unix(obj.created_at/1000);
-    if (date.format('YYYY-MM-DD') === curr.format('YYY-MM-DD')) {
-        return date.format('HH:mm:ss');
+    if (date.format('YYYY-MM-DD') === curr.format('YYYY-MM-DD')) {
+        return date.format('HH:mm');
     }
-    return date.format('YYYY-MM-DD HH:mm');
+    return date.format('MM-DD HH:mm');
 }
 
 function graph(data, keys) {
@@ -290,7 +290,7 @@ function graph(data, keys) {
             x: -20
         },
         subtitle: {
-            text: unescape(selectedURL()),
+            text: '<a target="_blank" href="'+unescape(selectedURL())+'">'+unescape(selectedURL())+'</a>',
             x: -20
         },
         xAxis: {
@@ -307,9 +307,9 @@ function graph(data, keys) {
                 color: '#808080'
             }]
         },
-        tooltip: {
-            valueSuffix: 'ms'
-        },
+        //tooltip: {
+            //valueSuffix: 'ms'
+        //},
         legend: {
             layout: 'vertical',
             align: 'right',

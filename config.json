@@ -1,4 +1,4 @@
 {
-    "database": "mongodb://ypu-stats.np.wc1.yellowpages.com:27017/ypu",
+    "database": "ypu-stats.np.wc1.yellowpages.com/ypu",
     "collection": "client"
 }

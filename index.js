@@ -1,14 +1,16 @@
 #! /usr/bin/env node
-var
-    MongoClient = require('mongodb').MongoClient,
-    spawn  = require('child_process').spawn,
-    Bench  = require('./lib/bench'),
-    path   = require('path'),
-    async  = require('async'),
-    cli    = require('./lib/cli');
+var spawn    = require('child_process').spawn;
+var path     = require('path');
+var async    = require('async');
 
-var bench = new Bench(cli.url);
-var runs  = [];
+var Bench    = require('./lib/bench');
+var cli      = require('./lib/cli');
+
+var db       = require('mongojs')(cli.database, [cli.collection]);
+
+var bench    = new Bench(cli.url);
+var runs     = [];
+var runcount = 0;
 var db;
 
 function median(values) {
@@ -21,19 +23,32 @@ function median(values) {
 }
 
 function seriesAction(callback) {
-    console.log('Running %s...', runcount++);
+    process.stdout.write('Running ' + (runcount++) + '... ');
     bench.run(function (result) {
         if (!result.json) {
             console.log(result.raw);
-            console.log("Run %s complete. (Parse Error Occured!)", runs.length);
+            console.log("complete. (Parse Error Occured!)", runs.length);
         } else {
             runs.push(result.json);
-            console.log("Run %s complete. (httpTrafficCompleted: %sms)", runs.length, result.json.metrics.httpTrafficCompleted);
+            console.log("complete.\n - httpTrafficCompleted: %sms", result.json.metrics.httpTrafficCompleted);
         }
         callback(null, null);
     });
 }
 
+function before() {
+    console.log('Benchmarking: %s', cli.url);
+    console.log(' ');
+}
+
+function after(set) {
+    console.log(' ');
+    console.log('Done! (median httpTrafficCompleted: %sms)', set.metrics.httpTrafficCompleted);
+    console.log(' ');
+    console.log('MongoDB Database:\n - %s', cli.database);
+    console.log('MongoDB Collection:\n - %s', cli.collection);
+    console.log(' ');
+}
 
 switch (cli.action) {
     case 'server':
@@ -51,36 +66,24 @@ switch (cli.action) {
         break;
     default:
         var series = [];
-        var runcount = 1;
         for (i = 0; i < cli.runs; i++) {
             series.push(seriesAction);
         }
 
+        before();
         async.series(series, function (err, result) {
             var set = median(runs);
             set.created_at = Date.now();
-            MongoClient.connect(cli.database, {db: {native_parser: true}}, function(err, db) {
+            db[cli.collection].save(set, function(err, doc) {
                 if (err) {
                     console.trace(err);
+                    db.close();
                     process.exit(1);
                 }
-                var collection = db.collection(cli.collection);
-                collection.insert(set, function (err, obj) {
-                    console.log("-------------------------------------------");
-                    console.log("Complete! (median httpTrafficCompleted: %sms)", set.metrics.httpTrafficCompleted);
-                    console.log("-------------------------------------------");
-                    if (err) { console.trace(err); }
-                    if (!obj) { console.log('Error inserting set:\n%s', JSON.stringify(set, null, 2)); }
-
-                    if (err || !obj) {
-                        console.log("-------------------------------------------");
-                    }
-
-                    console.log('MongoDB Database:\n - %s', cli.database);
-                    console.log('MongoDB Collection:\n - %s', cli.collection);
-                    console.log("-------------------------------------------");
-                    process.exit(0);
-                });
+                after(set);
+                db.close();
+                process.exit(0);
             });
         });
 }
+

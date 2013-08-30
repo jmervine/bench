@@ -1,129 +1,59 @@
-var isError     = require('util').isError;
-var MongoClient = require('mongodb').MongoClient;
-
-function dbc(collection, index, callback) {
-    MongoClient.connect(process.env.database, {db: {native_parser: true}}, function(err, db) {
-        if (err) {
-            console.trace(err);
-            callback(err);
-            db.close();
-        } else {
-            var col = db.collection(collection);
-            col.ensureIndex(index, function(err) {
-                if (err) { console.trace(err); } // non-fatal
-                callback(db,col);
-            });
-        }
-    });
-}
-
-function find(col, qual, rows, opts, callback) {
-    col
-    .find(qual, rows, opts)
-    .toArray(function(err, result) {
-        if (err) {
-            console.trace(err);
-            callback(err);
-        } else {
-            callback(result);
-        }
-    });
-}
+var mongojs   = require('mongojs');
+var col       = process.env.collection;
 
 module.exports = {
     index: function(req, res){
-        console.log(req.title_text);
       res.render('index', { title_text: req.title_text, title_link: req.title_link });
     },
     keys: function(req, res) {
-        var keys = [];
-        dbc(req.params.collection, { metrics: 1 }, function (db, col) {
-            if (isError(col)) { res.send(500); return; }
-            find(col, {}, { metrics: true }, {}, function (result) {
-                if (isError(result)) {
-                    res.send(404);
-                    db.close();
-                    return;
-                }
-                result.forEach(function(item) {
-                    Object.keys(item.metrics).forEach(function(key) {
-                        if (keys.indexOf(key) === -1) {
-                            keys.push(key);
-                        }
-                    });
-                });
+        var start = Date.now();
+        var db = mongojs(process.env.database, [ col ]);
+        db[col]
+            .findOne({},{metrics:-1},function(err, result) {
+                if (err) { res.send(500); db.close(); return; }
+                res.json(Object.keys(result.metrics));
                 db.close();
-                res.json(keys);
             });
-        });
     },
     urls: function(req, res) {
-        dbc(req.params.collection, { url: 1 }, function (db, col) {
-            if (isError(col)) { res.send(500); return; }
-            find(col, {}, { url: true }, { sort: 'url' }, function (result) {
-                if (isError(result)) {
-                    res.send(404);
-                    db.close();
-                    return;
-                }
-                var found = [];
-                result.forEach(function(item) {
-                    if (found.indexOf(item.url) === -1) {
-                        found.push(item.url);
-                    }
-                });
+        var db = mongojs(process.env.database, [ col ]);
+        db[col]
+            .distinct('url', function(err, results) {
+                if (err) { res.send(500); db.close(); return; }
+                res.json(results);
                 db.close();
-                res.json(found);
             });
-        });
     },
     count: function (req, res) {
-        dbc(req.params.collection, { url: 1 }, function (db, col) {
-            if (isError(col)) { res.send(500); return; }
-            var qual = {};
-            if (req.query.url) { qual.url = req.query.url; }
-            col.find(qual).count(function(err, count) {
-                if (err) {
-                    console.trace(err);
-                    res.send(404);
-                } else {
-                    res.json(count);
-                }
+        var db = mongojs(process.env.database, [ col ]);
+        db[col]
+            .find((req.query.url ? {url: req.query.url} : {}))
+            .count(function(err, count) {
+                if (err) { res.send(500); db.close(); return; }
+                res.json(count);
                 db.close();
             });
-        });
     },
     data: function(req, res){
-        var limit   = parseInt(req.query.limit, 10) || 10;
-        var start   = parseInt(req.query.start, 10) || false;
+        var db = mongojs(process.env.database, [ col ]);
+        var limit = parseInt(req.query.limit, 10) || 10;
 
-        if (!start && req.query.start && req.query.start === '0') {
-            start = 0;
-        }
-
-        dbc(req.params.collection, { created_at: 1, url: 1 }, function (db, col) {
-            if (isError(col)) { res.send(500); return; }
-            var opts = { sort: 'created_at' };
-            var rows = { url: true, metrics: true, created_at: true };
-            var qual = {};
-            if (req.query.url) {
-                qual.url = req.query.url;
-            }
-            find(col, qual, rows, opts, function (result) {
-                if (isError(result)) {
-                    res.send(404);
-                    db.close();
-                    return;
-                }
-                var set;
-                if (start || start === 0) {
-                    set = result.slice(start, start+limit);
-                } else {
-                    set = result.slice(result.length-limit);
+        db[col]
+            .find((req.query.url ? {url: req.query.url} : {}), {url:1, metrics:1, created_at:1})
+            .sort({created_at:1},
+            function(err, results) {
+                if (err) { res.send(500); db.close(); return; }
+                switch(req.query.start) {
+                    case 'undefined'||undefined:
+                        res.json(results.splice(-limit));
+                        break;
+                    case '0':
+                        res.json(results.splice(0,limit));
+                        break;
+                    default:
+                        res.json(results.splice(parseInt(req.query.start,10),limit));
                 }
                 db.close();
-                res.json(set);
             });
-        });
     }
 };
