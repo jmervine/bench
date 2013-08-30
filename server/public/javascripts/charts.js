@@ -196,19 +196,6 @@ var categories = {
         'cssCount',
         'jsCount',
         'imageCount',
-        'base64Count',
-        'smallImages',
-        'assetsNotGzipped',
-        'cacheHits',
-        'cacheMisses',
-        'DOMelementsCount',
-        'iframesCount',
-        'imagesWithoutDimensions',
-        'nodesWithInlineCSS',
-        'globalVariables',
-        'localStorageEntries',
-        'documentCookiesCount',
-        'domainsWithCookies',
         'otherCount'
     ]
 };
@@ -303,14 +290,9 @@ function graph(data, keys) {
                 color: '#808080'
             }]
         },
-        //tooltip: {
-            //valueSuffix: 'ms'
-        //},
         legend: {
-            layout: 'vertical',
-            align: 'right',
-            verticalAlign: 'middle',
-            borderWidth: 0
+            borderWidth: 0,
+            backgroundColor: '#000000'
         },
         series: series
     });
