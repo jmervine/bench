@@ -74,16 +74,23 @@ switch (cli.action) {
         async.series(series, function (err, result) {
             var set = median(runs);
             set.created_at = Date.now();
-            db[cli.collection].save(set, function(err, doc) {
-                if (err) {
-                    console.trace(err);
+            if (set) {
+                db[cli.collection].save(set, function(err, doc) {
+                    if (err) {
+                        console.trace(err);
+                        db.close();
+                        process.exit(1);
+                    }
+                    after(set);
                     db.close();
-                    process.exit(1);
-                }
-                after(set);
-                db.close();
-                process.exit(0);
-            });
+                    process.exit(0);
+                });
+            } else {
+                console.log('An error occured, nothing saved.');
+                console.log('--------------------------------');
+                console.dir(set);
+                process.exit(1);
+            }
         });
 }
 
