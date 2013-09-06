@@ -1,4 +1,5 @@
 {
     "database": "localhost/benchdb",
-    "collection": "client"
+    "collection": "client",
+    "server_theme": "slate"
 }

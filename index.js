@@ -56,9 +56,11 @@ switch (cli.action) {
           'collection',
           'ui_title_text',
           'ui_title_link',
+          'server_theme',
           'runs'
         ].forEach(function(arg) {
             if (typeof process.env[arg] === 'undefined' && typeof cli[arg] !== 'undefined') {
+                console.log(arg);
                 process.env[arg] = cli[arg];
             }
         });

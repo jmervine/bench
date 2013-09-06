@@ -279,6 +279,10 @@ $(window).load(function() {
                 });
             }
         });
+        if (results.length === 1) {
+            $('#urlselect :nth-child(2)').prop('selected', true);
+            $('#urlselect').change();
+        }
     });
 
     $.getJSON(apiPath('keys'), function(result) {
