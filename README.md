@@ -14,6 +14,10 @@ Using [Phantomas](https://github.com/macbre/phantomas) (a [PhantomJS](http://pha
 
 ### Install
 
+> CentOS needs the following for PhantomJS
+>
+> `yum install freetype fontconfig`
+
 1. Install [Node.js](http://nodejs.org)
 2. Install [mongodb](http://www.mongodb.org/)
 3. Install `bench`
