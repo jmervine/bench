@@ -60,7 +60,6 @@ switch (cli.action) {
           'runs'
         ].forEach(function(arg) {
             if (typeof process.env[arg] === 'undefined' && typeof cli[arg] !== 'undefined') {
-                console.log(arg);
                 process.env[arg] = cli[arg];
             }
         });
