@@ -34,7 +34,10 @@ app.configure(function(){
   app.use(app.router);
   app.use(express.static(__dirname + '/public'));
 
-  app.locals({ theme: (process.env.server_theme || "slate") });
+  app.locals({
+      theme: (process.env.server_theme || "slate"),
+      chart_theme: (process.env.chart_theme || false )
+  });
 
   /* pretty sure there's a better way, but haven't
    * found it yet. */

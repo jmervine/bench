@@ -57,6 +57,7 @@ switch (cli.action) {
           'ui_title_text',
           'ui_title_link',
           'server_theme',
+          'chart_theme',
           'runs'
         ].forEach(function(arg) {
             if (typeof process.env[arg] === 'undefined' && typeof cli[arg] !== 'undefined') {

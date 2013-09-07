@@ -14,5 +14,6 @@ html
   script(src='//cdn.jsdelivr.net/momentjs/2.1.0/moment.min.js')
   script(src='/javascripts/charts.js')
   script(src='//cdn.jsdelivr.net/highcharts/3.0.4/modules/exporting.js')
-  script(src='//cdn.jsdelivr.net/highcharts/3.0.4/themes/gray.js')
+  - if (chart_theme)
+    script(src='//cdn.jsdelivr.net/highcharts/3.0.4/themes/'+chart_theme+'.js')
   script(src='//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js')

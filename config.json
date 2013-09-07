@@ -1,5 +1,6 @@
 {
     "database": "localhost/benchdb",
     "collection": "client",
-    "server_theme": "slate"
+    "server_theme": "slate",
+    "chart_theme": "gray"
 }

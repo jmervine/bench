@@ -227,8 +227,7 @@ function graph(data, keys) {
             }]
         },
         legend: {
-            borderWidth: 0,
-            backgroundColor: '#000000'
+            borderWidth: 0
         },
         series: series
     });
