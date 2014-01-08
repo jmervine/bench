@@ -73,7 +73,7 @@ switch (cli.action) {
         }
 
         before();
-        async.series(series, function (err, result) {
+        async.parallelLimit(series,cli.limit, function (err, result) {
             var set = median(runs);
             set.created_at = Date.now();
             if (set) {

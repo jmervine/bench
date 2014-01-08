@@ -35,7 +35,7 @@
     "jade": ">= 0.0.1",
     "connect": "~2.8.5",
     "async": "~0.2.9",
-    "mongojs": "~0.7.17"
+    "mongojs": "*"
   },
   "devDependencies": {
     "nodeunit": "~0.8.1"
