@@ -1,6 +1,6 @@
 {
   "name": "bench",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Benchmark a web page and display results with a pretty UI.",
   "main": "index.js",
   "scripts": {
@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:jmervine/bench.git"
+    "url": "git@github.com:nangus/bench.git"
   },
   "keywords": [
     "benchmark",
@@ -23,10 +23,10 @@
     "web",
     "performance"
   ],
-  "author": "Joshua Mervine <joshua@mervine.net> (http://mervine.net)",
+  "author": "Nicholas Jones <nojones@gmail.com> (http://nich.olas.biz)",
   "license": "BSD",
   "bugs": {
-    "url": "https://github.com/jmervine/bench/issues"
+    "url": "https://github.com/nangus/bench/issues"
   },
   "dependencies": {
     "phapper": "~0.1.5",
