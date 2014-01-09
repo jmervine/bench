@@ -25,13 +25,11 @@ function median(values) {
 function seriesAction(callback) {
     process.stdout.write('Running ' + (runcount++) + '... ');
     bench.run(function (result) {
-        console.log('result');
         if (!result.json) {
             console.log(result.raw);
             console.log("complete. (Parse Error Occured!)", runs.length);
         } else {
-        console.log(result.json.metrics.timeToFirstByte);
-        console.log(result.json.metrics.timeToLastByte);
+            runs.push(result.json);
             console.log("complete.\n - httpTrafficCompleted: %sms", result.json.metrics.httpTrafficCompleted);
         }
         callback(null, null);
@@ -44,7 +42,6 @@ function before() {
 }
 
 function after(set) {
-    console.log(set.metrics);
     console.log(' ');
     console.log('Done! (median httpTrafficCompleted: %sms)', set.metrics.httpTrafficCompleted);
     console.log(' ');
