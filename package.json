@@ -23,7 +23,8 @@
     "web",
     "performance"
   ],
-  "author": "Nicholas Jones <nojones@gmail.com> (http://nich.olas.biz)",
+  "author": "Joshua Mervine <joshua@mervine.net> (http://mervine.net)",
+  "contributors": {"Nicholas Jones <nojones@gmail.com> (http://nich.olas.biz)"},
   "license": "BSD",
   "bugs": {
     "url": "https://github.com/nangus/bench/issues"

@@ -19,7 +19,7 @@ function median(values) {
     if (values.length % 2) {
         return values[half];
     }
-    return (values[half-1] + values[half]) / 2.0;
+    return (values[half+1] + values[half]) / 2.0;
 }
 
 function seriesAction(callback) {
@@ -42,6 +42,7 @@ function before() {
 }
 
 function after(set) {
+    console.log(set.metrics);
     console.log(' ');
     console.log('Done! (median httpTrafficCompleted: %sms)', set.metrics.httpTrafficCompleted);
     console.log(' ');
