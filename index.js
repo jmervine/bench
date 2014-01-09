@@ -19,17 +19,19 @@ function median(values) {
     if (values.length % 2) {
         return values[half];
     }
-    return (values[half+1] + values[half]) / 2.0;
+    return (values[half-1] + values[half]) / 2.0;
 }
 
 function seriesAction(callback) {
     process.stdout.write('Running ' + (runcount++) + '... ');
     bench.run(function (result) {
+        console.log('result');
         if (!result.json) {
             console.log(result.raw);
             console.log("complete. (Parse Error Occured!)", runs.length);
         } else {
-            runs.push(result.json);
+        console.log(result.json.metrics.timeToFirstByte);
+        console.log(result.json.metrics.timeToLastByte);
             console.log("complete.\n - httpTrafficCompleted: %sms", result.json.metrics.httpTrafficCompleted);
         }
         callback(null, null);
