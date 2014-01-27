@@ -2,24 +2,26 @@
 var spawn    = require('child_process').spawn;
 var path     = require('path');
 var async    = require('async');
-
 var Bench    = require('./lib/bench');
 var cli      = require('./lib/cli');
-
 var db       = require('mongojs')(cli.database, [cli.collection]);
-
 var bench    = new Bench(cli.url);
 var runs     = [];
 var runcount = 0;
 var db;
 
 function median(values) {
-    values.sort(function(a,b) {return (a.last_nom > b.last_nom) ? 1 : ((b.last_nom > a.last_nom) ? -1 : 0);} );
+    values.sort(function(a,b) { return a.metrics.httpTrafficCompleted - b.metrics.httpTrafficCompleted;} );
     var half = Math.floor(values.length/2);
     if (values.length % 2) {
         return values[half];
     }
-    return (values[half-1] + values[half]) / 2.0;
+    var ret=values[half];
+    var other=values[half-1].metrics;
+    for(i in ret.metrics ){
+        ret.metrics[i]=(ret.metrics[i]+other[i])/2;
+    }
+    return ret;
 }
 
 function seriesAction(callback) {
@@ -68,10 +70,10 @@ switch (cli.action) {
         break;
     default:
         var series = [];
+        console.log(cli.runs);
         for (i = 0; i < cli.runs; i++) {
             series.push(seriesAction);
         }
-
         before();
         async.parallelLimit(series,cli.limit, function (err, result) {
             var set = median(runs);
@@ -95,4 +97,3 @@ switch (cli.action) {
             }
         });
 }
-
