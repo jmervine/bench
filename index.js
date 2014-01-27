@@ -70,7 +70,6 @@ switch (cli.action) {
         break;
     default:
         var series = [];
-        console.log(cli.runs);
         for (i = 0; i < cli.runs; i++) {
             series.push(seriesAction);
         }
