@@ -1,6 +1,6 @@
 {
   "name": "bench",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Benchmark a web page and display results with a pretty UI.",
   "main": "index.js",
   "scripts": {
@@ -24,6 +24,7 @@
     "performance"
   ],
   "author": "Joshua Mervine <joshua@mervine.net> (http://mervine.net)",
+  "contributors": ["Nicholas Jones <nojones@gmail.com> (http://nich.olas.biz)"],
   "license": "BSD",
   "bugs": {
     "url": "https://github.com/jmervine/bench/issues"
@@ -35,7 +36,7 @@
     "jade": ">= 0.0.1",
     "connect": "~2.8.5",
     "async": "~0.2.9",
-    "mongojs": "~0.9.11"
+    "mongojs": "0.10.*"
   },
   "devDependencies": {
     "nodeunit": "~0.8.1"
