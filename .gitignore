@@ -3,3 +3,4 @@
 /lib/phantomas
 /database.js*
 nohup.out
+*.zip

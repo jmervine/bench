@@ -29,7 +29,7 @@
     "url": "https://github.com/jmervine/bench/issues"
   },
   "dependencies": {
-    "phapper": "~0.1.5",
+    "phapper": "~0.1.8",
     "commander": "~2.0.0",
     "express": "2.5.8",
     "jade": ">= 0.0.1",
