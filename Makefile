@@ -1,5 +1,5 @@
-PHANTOMAS_VERSION=0.12.1
-PHANTOMAS_PATH=https://github.com/macbre/phantomas/archive/v$(PHANTOMAS_VERSION).zip
+PHANTOMAS_VERSION=0.4.1
+PHANTOMAS_PATH=https://github.com/macbre/phantomas/archive/$(PHANTOMAS_VERSION).zip
 
 test: .PHONY
 	./node_modules/.bin/nodeunit ./test/*_test.js
