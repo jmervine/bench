@@ -1,4 +1,4 @@
-PHANTOMAS_VERSION=0.4.1
+PHANTOMAS_VERSION=v0.8.1
 PHANTOMAS_PATH=https://github.com/macbre/phantomas/archive/$(PHANTOMAS_VERSION).zip
 
 test: .PHONY
@@ -8,7 +8,7 @@ run:
 	./index.js server
 
 start:
-	NODE_ENV=production nohup ./index.js server &
+	NODE_ENV=production nohup ./index.js server --config ./config.json &
 
 kill:
 	pkill -9 -f "bench/server/app.js"
@@ -16,7 +16,7 @@ kill:
 bench: setup
 	node ./index.js
 
-setup: lib/phantomas
+setup:
 	npm install
 
 clean:
@@ -28,7 +28,7 @@ lib/phantomas:
 		wget $(PHANTOMAS_PATH)                         \
 			-O $(PHANTOMAS_VERSION).zip             && \
 		unzip $(PHANTOMAS_VERSION).zip              && \
-		mv phantomas-$(PHANTOMAS_VERSION) phantomas && \
+		mv phantomas-* phantomas && \
 		rm $(PHANTOMAS_VERSION).zip
 
 .PHONY:
